@@ -28,13 +28,17 @@ public class CardController {
     @PostMapping("/masked")
     public ResponseEntity<CardDto> createCard(@RequestBody CardDto cardDto) {
 
-        log.info("Вызов метода createCard в CardController");
-        log.info("В метод поступило DTO: {}", maskingUtil.maskDto(cardDto));
-        System.out.println("То же через sout: " + maskingUtil.maskDto(cardDto));
+        log.info("проверка маскировки DTO в логгере - должна работать при указании @EnableMasking: {}",
+            maskingUtil.maskDto(cardDto));
+        System.out.println("проверка маскировки DTO в sout - должна работать при указании @EnableMasking: " +
+            maskingUtil.maskDto(cardDto));
+        log.info("проверка маскировки DTO в логгере - НЕ должна работать никогда {}", cardDto);
+        System.out.println("проверка маскировки DTO в sout - НЕ должна работать никогда: " + cardDto);
+
+        log.info("Контроллер - пришло DTO для сохранения: {}", maskingUtil.maskDto(cardDto));
 
         CardDto savedDto = cardService.createCard(cardDto);
-        log.info("В метод createCard контроллера CardController поступило сохраненное DTO: {}", maskingUtil.maskDto(savedDto));
-        System.out.println("То же через sout: " + maskingUtil.maskDto(savedDto));
+        log.info("Контроллер - пришло сохраненное DTO: {}", maskingUtil.maskDto(savedDto));
 
         return ResponseEntity.ok(savedDto);
     }

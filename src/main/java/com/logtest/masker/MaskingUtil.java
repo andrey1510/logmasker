@@ -13,16 +13,16 @@ public class MaskingUtil {
     private final MaskingContext maskingContext;
 
     public String maskDto(Object object) {
+
         if (object == null) return "null";
 
-        if (!maskingContext.isNeedMask()) {
-            return object.toString();
-        }
+        if (!maskingContext.isNeedMask()) return object.toString();
 
         return maskObject(object);
     }
 
     private String maskObject(Object object) {
+
         if (object == null) return "null";
 
         try {

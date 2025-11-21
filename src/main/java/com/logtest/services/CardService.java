@@ -21,24 +21,17 @@ public class CardService {
 
     @EnableMasking
     public CardDto createCard(CardDto cardDto) {
-
-        log.info("Вызов метода createCard в CardService");
-
-        log.info("В метод createCard в CardService поступило dto: {}", maskingUtil.maskDto(cardDto));
-        System.out.println("То же через sout: " + cardDto);
+        log.info("Сервис - пришло Dto из контроллера: {}",maskingUtil.maskDto(cardDto));
 
         CardDto editedCardDto = new CardDto(cardDto.getCardNumber(), cardDto.getDescription() + " add text");
-        log.info("Симуляция в методе createCard в CardService действий с dto, editedCardDto: {}", maskingUtil.maskDto(editedCardDto));
-        System.out.println("То же через sout: " + maskingUtil.maskDto(editedCardDto));
+        log.info("Сервис - симуляция действий с dto: {}", maskingUtil.maskDto(editedCardDto));
 
         CardEntity cardEntity = new CardEntity(1, editedCardDto.getCardNumber(), editedCardDto.getDescription());
-        log.info("В CardService создано entity (никогда не должно маскироваться): {}", cardEntity);
-        System.out.println("То же через sout: " + cardEntity);
+        log.info("Сервис - создано entity (НЕ должно маскироваться): {}", cardEntity);
 
         CardEntity savedCard = cardRepository.emulateSave(cardEntity);
         CardDto savedCardDto = new CardDto(savedCard.getCardNumber(), savedCard.getDescription());
-        log.info("В CardService поступило из репозитория сохраненное DTO: {}", maskingUtil.maskDto(savedCardDto));
-        System.out.println("То же через sout: " + maskingUtil.maskDto(savedCardDto));
+        log.info("Сервис - сохраненное entity конвертировано в DTO: {}", maskingUtil.maskDto(savedCardDto));
 
         return savedCardDto;
 

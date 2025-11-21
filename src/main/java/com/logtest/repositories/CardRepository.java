@@ -9,9 +9,7 @@ import org.springframework.stereotype.Repository;
 public class CardRepository {
 
     public CardEntity emulateSave(CardEntity card) {
-        log.info("Вызов метода emulateSave в CardRepository");
-        log.info("Это entity будет сохранено в базу через CardRepository (никогда не должно маскироваться): {}", card);
-        System.out.println("То же через sout: " + card);
+        log.info("Репозиторий - пришло entity (никогда не должно маскироваться): {}", card);
         return card;
     }
 
