@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MaskedProperty {
-    String pattern();
-    String replacement();
+    MaskType type() default MaskType.CUSTOM;
+    String pattern() default "";
+    String replacement() default "";
 }
