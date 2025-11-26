@@ -16,6 +16,8 @@ import java.util.Set;
 @NoArgsConstructor
 public class SecondLevelDto {
 
+    boolean isMasked;
+
     @MaskedProperty(pattern = "(\\d{6})\\d+(\\d{4})", replacement = "$1***$2")
     private String cardNumber;
 

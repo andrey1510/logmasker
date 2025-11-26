@@ -1,8 +1,11 @@
 package com.logtest.masker;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,7 +14,13 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.util.ReflectionUtils.findField;
+
+@Slf4j
 public class Masker {
+
+    private static final String DATE_FIELD_POSFIX = "Masked";
+    private static final String ISMASKED_FIELD_NAME = "isMasked";
 
     public static <T> T mask(T dto) {
         return mask(dto, new IdentityHashMap<>());
@@ -35,10 +44,13 @@ public class Masker {
             processed.put(dto, maskedDto);
 
             copyAndMaskFields(dto, maskedDto, dtoClass, processed);
+
+            setMaskedFlag(maskedDto);
+
             return maskedDto;
 
         } catch (Exception e) {
-            System.err.println("Error during masking: " + e.getMessage());
+            log.error("Error during masking: {}", e.getMessage());
             return dto;
         }
     }
@@ -46,11 +58,45 @@ public class Masker {
     private static <T> void copyAndMaskFields(T source, T target, Class<?> clazz, Map<Object, Object> processed)
         throws IllegalAccessException {
 
-        for (Field field : getAllFields(clazz)) {
+        List<Field> allFields = getAllFields(clazz);
+
+        for (Field field : allFields) {
             field.setAccessible(true);
-            Object originalValue = field.get(source);
-            Object maskedValue = processFieldValue(field, originalValue, processed);
-            field.set(target, maskedValue);
+
+            MaskedProperty annotation = field.getAnnotation(MaskedProperty.class);
+            if (annotation != null && annotation.type() == MaskType.DATE && field.getType() == LocalDate.class)
+                continue;
+
+            field.set(target, processFieldValue(field, field.get(source), processed));
+        }
+
+        for (Field field : allFields) {
+            MaskedProperty annotation = field.getAnnotation(MaskedProperty.class);
+            if (annotation != null && annotation.type() == MaskType.DATE && field.getType() == LocalDate.class)
+                processDateField(source, target, field);
+        }
+    }
+
+    private static void processDateField(Object source, Object target, Field dateField) throws IllegalAccessException {
+
+        dateField.setAccessible(true);
+        LocalDate originalDate = (LocalDate) dateField.get(source);
+
+        dateField.set(target, null);
+
+        Field maskedField = findField(target.getClass(), dateField.getName() + DATE_FIELD_POSFIX);
+
+        if (maskedField != null && maskedField.getType() == String.class) {
+            maskedField.setAccessible(true);
+            if (originalDate != null) {
+                String maskedDate = MaskUtils.maskedLocalDate(originalDate);
+                maskedField.set(target, maskedDate);
+            } else {
+                maskedField.set(target, null);
+            }
+        } else {
+            log.warn("Pair field not found in Dto class {} for date field {}",
+                target.getClass().getSimpleName(), dateField.getName());
         }
     }
 
@@ -59,8 +105,13 @@ public class Masker {
         if (value == null)
             return null;
 
-        if (field.getAnnotation(MaskedProperty.class) != null && value instanceof String)
-            return applyMasking((String) value, field.getAnnotation(MaskedProperty.class));
+        MaskedProperty annotation = field.getAnnotation(MaskedProperty.class);
+
+        if (annotation != null && annotation.type() == MaskType.DATE && value instanceof LocalDate)
+            return value;
+
+        if (annotation != null && value instanceof String)
+            return applyMasking((String) value, annotation);
 
         if (value instanceof Collection)
             return processCollection((Collection<?>) value, field, processed);
@@ -98,6 +149,7 @@ public class Masker {
             case ISSUER_NAME -> MaskUtils.maskedIssuerName(value);
             case OTHER_DUL_SERIES -> MaskUtils.maskedOtherDulSeries(value);
             case OTHER_DUL_NUMBER -> MaskUtils.maskedOtherDulNumber(value);
+            case DATE -> value;
             default -> value;
         };
     }
@@ -234,6 +286,7 @@ public class Masker {
             !(obj instanceof Number) &&
             !(obj instanceof Boolean) &&
             !(obj instanceof Character) &&
+            !(obj instanceof LocalDate) &&
             !obj.getClass().getName().startsWith("java.") &&
             !obj.getClass().getName().startsWith("javax.");
     }
@@ -249,4 +302,20 @@ public class Masker {
 
         return fields;
     }
+
+    private static void setMaskedFlag(Object dto) {
+        try {
+            Field maskedField = dto.getClass().getDeclaredField(ISMASKED_FIELD_NAME);
+
+            if (maskedField.getType() == boolean.class || maskedField.getType() == Boolean.class) {
+                maskedField.setAccessible(true);
+                maskedField.set(dto, true);
+            }
+        } catch (NoSuchFieldException e) {
+            log.warn("isMasked field not found in Dto class {}: {}", dto.getClass().getSimpleName(), e.getMessage());
+        } catch (Exception e) {
+            log.error("Error setting isMasked flag in Dto class {}: {}", dto.getClass().getSimpleName(), e.getMessage());
+        }
+    }
+
 }

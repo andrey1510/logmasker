@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Masked
 @Data
 @AllArgsConstructor
@@ -29,5 +31,20 @@ public class AllStringTypesDto {
     private String phone;
 
     private String description; // Won't be masked
+
+    @MaskedProperty(type = MaskType.DATE)
+    private LocalDate someDate;
+
+    private String someDateMasked;
+
+    @MaskedProperty(type = MaskType.DATE)
+    private LocalDate otherDate;
+
+    private String otherDateMasked;
+
+    @MaskedProperty(type = MaskType.DATE)
+    private LocalDate anotherDate;
+
+    private String annnnnotherDateMasked;
 
 }

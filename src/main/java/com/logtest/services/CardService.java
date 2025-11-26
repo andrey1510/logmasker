@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,14 +23,25 @@ import static com.logtest.masker.Masker.mask;
 @RequiredArgsConstructor
 public class CardService {
 
-    ThirdLevelDto thirdLevelDto1 = new ThirdLevelDto("first@email.com");
-    ThirdLevelDto thirdLevelDto2 = new ThirdLevelDto("second@email.com");
+    ThirdLevelDto thirdLevelDto1 = new ThirdLevelDto(
+        false,
+        "first@email.com",
+        LocalDate.of(2011, 11, 11),
+        "smth"
+    );
+    ThirdLevelDto thirdLevelDto2 = new ThirdLevelDto(
+        false,
+        "second@email.com",
+        LocalDate.of(2010, 10, 10),
+        ""
+    );
     HashSet<ThirdLevelDto> thirdLevelDtos = new HashSet<>(Arrays.asList(thirdLevelDto1, thirdLevelDto2));
     HashMap<String, ThirdLevelDto> dtoMap = new HashMap<>(Map.of(
         "key1", thirdLevelDto1,
         "key2", thirdLevelDto2
     ));
     SecondLevelDto secondLevelDto1 = new SecondLevelDto(
+        false,
         "2234567890123451",
         "100000",
         thirdLevelDto1,
@@ -38,6 +50,7 @@ public class CardService {
         "descr"
     );
     SecondLevelDto secondLevelDto2 = new SecondLevelDto(
+        false,
         "2234567890123452",
         "20000000",
         thirdLevelDto1,
@@ -57,7 +70,13 @@ public class CardService {
         "Петров Петр Петрович",
         "test@mail.com",
         "123456",
-        "not to be masked"
+        "not to be masked",
+        LocalDate.of(2012, 12, 12),
+        null,
+        LocalDate.of(2001, 10, 10),
+        null,
+        LocalDate.of(2002, 10, 10),
+        null
     );
 
 
