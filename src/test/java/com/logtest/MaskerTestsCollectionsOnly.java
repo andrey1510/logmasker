@@ -1,6 +1,5 @@
 package com.logtest;
 
-import com.logtest.dto.dtoForCollection.DtoWithSet;
 import com.logtest.masker.Masker;
 import com.logtest.testData.TestDataForCollections;
 import org.junit.jupiter.api.Test;
@@ -41,9 +40,7 @@ public class MaskerTestsCollectionsOnly extends TestDataForCollections {
 
     @Test
     void testSetImmutable() {
-        DtoWithSet setImmutableMasked = createSetImmutableMasked();
-        DtoWithSet setImmutable = createSetImmutable();
-        assertEquals(setImmutableMasked, Masker.mask(setImmutable));
+        assertEquals(createSetImmutableMasked(), Masker.mask(createSetImmutable()));
     }
 
     @Test
