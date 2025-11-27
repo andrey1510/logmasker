@@ -9,10 +9,21 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import static org.springframework.util.ReflectionUtils.findField;
 
@@ -26,7 +37,6 @@ public class Masker {
         return mask(dto, new IdentityHashMap<>());
     }
 
-    @SuppressWarnings("unchecked")
     private static <T> T mask(T dto, Map<Object, Object> processed) {
 
         if (dto == null) return null;
@@ -154,9 +164,7 @@ public class Masker {
         };
     }
 
-    @SuppressWarnings("unchecked")
     private static Collection<?> processCollection(Collection<?> collection, Field field, Map<Object, Object> processed) {
-
         if (collection.isEmpty())
             return createEmptyCollection(collection);
 
@@ -185,7 +193,6 @@ public class Masker {
         return resultCollection;
     }
 
-    @SuppressWarnings("unchecked")
     private static Map<?, ?> processMap(Map<?, ?> map, Field field, Map<Object, Object> processed) {
 
         if (map.isEmpty())
@@ -245,7 +252,34 @@ public class Masker {
         try {
             return original.getClass().getDeclaredConstructor().newInstance();
         } catch (Exception e) {
-            return new ArrayList<>();
+            log.info("Cannot create instance of collection class {}. Using default implementation.",
+                original.getClass().getSimpleName());
+
+            if (original instanceof Set) {
+                if (original instanceof SortedSet) {
+                    return new TreeSet<>(((SortedSet<?>) original).comparator());
+                } else if (original instanceof LinkedHashSet) {
+                    return new LinkedHashSet<>();
+                } else {
+                    return new HashSet<>();
+                }
+            } else if (original instanceof List) {
+                if (original instanceof LinkedList) {
+                    return new LinkedList<>();
+                } else {
+                    return new ArrayList<>();
+                }
+            } else if (original instanceof Queue) {
+                if (original instanceof PriorityQueue) {
+                    return new PriorityQueue<>(((PriorityQueue<?>) original).comparator());
+                } else if (original instanceof Deque) {
+                    return new LinkedList<>();
+                } else {
+                    return new LinkedList<>();
+                }
+            } else {
+                return new ArrayList<>();
+            }
         }
     }
 
@@ -253,7 +287,11 @@ public class Masker {
         try {
             return original.getClass().getDeclaredConstructor().newInstance();
         } catch (Exception e) {
-            return new HashMap<>();
+            if (original instanceof SortedMap) {
+                return new TreeMap<>();
+            } else {
+                return new HashMap<>();
+            }
         }
     }
 
