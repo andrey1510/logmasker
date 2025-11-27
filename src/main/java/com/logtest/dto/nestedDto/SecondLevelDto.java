@@ -1,8 +1,8 @@
 package com.logtest.dto.nestedDto;
 
 import com.logtest.masker.MaskType;
-import com.logtest.masker.Masked;
-import com.logtest.masker.MaskedProperty;
+import com.logtest.masker.annotations.Masked;
+import com.logtest.masker.annotations.MaskedProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

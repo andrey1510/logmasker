@@ -1,7 +1,7 @@
 package com.logtest.dto.patternTypes;
 
-import com.logtest.masker.Masked;
-import com.logtest.masker.MaskedProperty;
+import com.logtest.masker.annotations.Masked;
+import com.logtest.masker.annotations.MaskedProperty;
 import com.logtest.masker.MaskType;
 import lombok.AllArgsConstructor;
 import lombok.Data;

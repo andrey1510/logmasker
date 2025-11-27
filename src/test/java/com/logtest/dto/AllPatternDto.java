@@ -1,16 +1,14 @@
 package com.logtest.dto;
 
-import com.logtest.dto.nestedDto.Credentials;
 import com.logtest.masker.MaskType;
-import com.logtest.masker.Masked;
-import com.logtest.masker.MaskedProperty;
+import com.logtest.masker.annotations.Masked;
+import com.logtest.masker.annotations.MaskedProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 @Masked
 @Builder

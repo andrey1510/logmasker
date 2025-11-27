@@ -1,6 +1,5 @@
 package com.logtest;
 
-
 import com.logtest.dto.AllPatternDto;
 import com.logtest.dto.nestedDto.Person;
 import com.logtest.masker.Masker;
