@@ -3,11 +3,11 @@ package com.logtest.masker;
 import com.logtest.masker.annotations.Masked;
 import com.logtest.masker.annotations.MaskedProperty;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -20,7 +20,6 @@ import java.util.Set;
 public class Masker {
     private static final String DATE_FIELD_POSTFIX = "Masked";
     private static final String ISMASKED_FIELD_NAME = "isMasked";
-    private static final String DATE_REPLACEMENT = "0000-01-01";
     private static final Set<Class<?>> IMMUTABLE_TYPES = Set.of(
         String.class, Number.class, Boolean.class, Character.class, LocalDate.class
     );
@@ -78,43 +77,37 @@ public class Masker {
     private static void processRegularFields(
         Object source, Object target, List<Field> fields, Map<Object, Object> processed
     ) {
-        fields.stream()
-            .filter(field -> !isDateField(field))
-            .forEach(field -> {
-                field.setAccessible(true);
-                try {
-                    field.set(target, processFieldValue(field, field.get(source), processed));
-                } catch (IllegalAccessException e) {
-                    log.warn("Failed to access field {}: {}", field.getName(), e.getMessage());
-                }
-            });
+        fields.forEach(field -> {
+            field.setAccessible(true);
+            try {
+                field.set(target, processFieldValue(field, field.get(source), processed));
+            } catch (IllegalAccessException e) {
+                log.warn("Failed to access field {}: {}", field.getName(), e.getMessage());
+            }
+        });
     }
 
     private static void processDateFields(Object source, Object target, List<Field> fields) {
         fields.stream()
-            .filter(Masker::isDateField)
+            .filter(field -> {
+                MaskedProperty annotation = field.getAnnotation(MaskedProperty.class);
+                return annotation != null && (annotation.type() == MaskType.LOCALDATE_FIELD_TO_STRING_FIELD ||
+                    annotation.type() == MaskType.LOCALDATE_TO_ZERO_DATE) && field.getType() == LocalDate.class;
+            })
             .forEach(field -> {
                 MaskedProperty annotation = field.getAnnotation(MaskedProperty.class);
-                if (annotation.type() == MaskType.DATE_COPY) {
+                if (annotation.type() == MaskType.LOCALDATE_FIELD_TO_STRING_FIELD) {
                     processDateField(source, target, field);
-                } else if (annotation.type() == MaskType.DATE_REPLACE) {
+                } else if (annotation.type() == MaskType.LOCALDATE_TO_ZERO_DATE) {
                     processDateReplaceField(source, target, field);
                 }
             });
     }
 
-    private static boolean isDateField(Field field) {
-        MaskedProperty annotation = field.getAnnotation(MaskedProperty.class);
-        return annotation != null &&
-            (annotation.type() == MaskType.DATE_COPY || annotation.type() == MaskType.DATE_REPLACE)
-            && field.getType() == LocalDate.class;
-    }
-
     private static void processDateReplaceField(Object source, Object target, Field dateField) {
         dateField.setAccessible(true);
         try {
-            LocalDate nullDate = LocalDate.of(0, 1, 1);
-            dateField.set(target, nullDate);
+            dateField.set(target, MaskUtils.changeLocalDate((LocalDate) dateField.get(source)));
         } catch (IllegalAccessException e) {
             log.warn("Failed to process date replacement field {}: {}", dateField.getName(), e.getMessage());
         }
@@ -125,13 +118,15 @@ public class Masker {
 
         if (value instanceof String) {
             return processStringValue(field, (String) value);
-        } else if (value instanceof Collection) {
-            return CollectionMasker.processListOrSet((Collection<?>) value, field, processed);
+        } else if (value instanceof List) {
+            return CollectionMasker.processList((List<?>) value, field, processed);
+        } else if (value instanceof Set) {
+            return CollectionMasker.processSet((Set<?>) value, field, processed);
         } else if (value instanceof Map) {
             return CollectionMasker.processMap((Map<?, ?>) value, field, processed);
         } else if (value.getClass().isArray()) {
             return CollectionMasker.processArray(value, processed);
-        } else if (isCustomObject(value)) {
+        } else if (isDto(value)) {
             return processRecursively(value, processed);
         } else {
             return value;
@@ -140,70 +135,52 @@ public class Masker {
 
     private static String processStringValue(Field field, String value) {
         return Optional.ofNullable(field.getAnnotation(MaskedProperty.class))
-            .map(annotation -> {
-                if (annotation.type() == MaskType.DATE_REPLACE) {
-                    return DATE_REPLACEMENT;
-                }
-                return applyMasking(value, annotation);
+            .map(annotation -> switch (annotation.type()) {
+                case CUSTOM -> value.replaceAll(annotation.pattern(), annotation.replacement());
+                case TEXT_FIELD -> MaskUtils.maskedTextField(value);
+                case NAME -> MaskUtils.maskedName(value);
+                case EMAIL -> MaskUtils.maskedEmail(value);
+                case PHONE -> MaskUtils.maskedPhoneNumber(value);
+                case CONFIDENTIAL_NUMBER -> MaskUtils.maskedConfidentialNumber(value);
+                case PIN -> MaskUtils.maskedPIN(value);
+                case PAN -> MaskUtils.maskedPAN(value);
+                case BALANCE -> MaskUtils.maskedBalance(value);
+                case PASSPORT_SERIES -> MaskUtils.maskedPassportSeries(value);
+                case PASSPORT_NUMBER -> MaskUtils.maskedPassportNumber(value);
+                case PASSPORT -> MaskUtils.maskedPassport(value);
+                case ISSUER_CODE -> MaskUtils.maskedIssuerCode(value);
+                case ISSUER_NAME -> MaskUtils.maskedIssuerName(value);
+                case OTHER_DUL_SERIES -> MaskUtils.maskedOtherDulSeries(value);
+                case OTHER_DUL_NUMBER -> MaskUtils.maskedOtherDulNumber(value);
+                default -> value;
             })
             .orElse(value);
-    }
-
-    private static String applyMasking(String value, MaskedProperty annotation) {
-        if (annotation.type() == MaskType.CUSTOM)
-            return value.replaceAll(annotation.pattern(), annotation.replacement());
-
-        return switch (annotation.type()) {
-            case TEXT_FIELD -> MaskUtils.maskedTextField(value);
-            case NAME -> MaskUtils.maskedName(value);
-            case EMAIL -> MaskUtils.maskedEmail(value);
-            case PHONE -> MaskUtils.maskedPhoneNumber(value);
-            case CONFIDENTIAL_NUMBER -> MaskUtils.maskedConfidentialNumber(value);
-            case PIN -> MaskUtils.maskedPIN(value);
-            case PAN -> MaskUtils.maskedPAN(value);
-            case BALANCE -> MaskUtils.maskedBalance(value);
-            case PASSPORT_SERIES -> MaskUtils.maskedPassportSeries(value);
-            case PASSPORT_NUMBER -> MaskUtils.maskedPassportNumber(value);
-            case PASSPORT -> MaskUtils.maskedPassport(value);
-            case ISSUER_CODE -> MaskUtils.maskedIssuerCode(value);
-            case ISSUER_NAME -> MaskUtils.maskedIssuerName(value);
-            case OTHER_DUL_SERIES -> MaskUtils.maskedOtherDulSeries(value);
-            case OTHER_DUL_NUMBER -> MaskUtils.maskedOtherDulNumber(value);
-            case DATE_COPY -> value;
-            default -> value;
-        };
     }
 
     private static void processDateField(Object source, Object target, Field dateField) {
         dateField.setAccessible(true);
         try {
             dateField.set(target, null);
-            setMaskedDateField(target, dateField.getName(), (LocalDate) dateField.get(source));
+            findAndSetMaskedDateField(target, dateField.getName(), (LocalDate) dateField.get(source));
         } catch (IllegalAccessException e) {
             log.warn("Failed to process date field {}: {}", dateField.getName(), e.getMessage());
         }
     }
 
-    private static void setMaskedDateField(Object target, String fieldName, LocalDate originalDate) {
-        findMaskedDateField(target.getClass(), fieldName + DATE_FIELD_POSTFIX)
+    private static void findAndSetMaskedDateField(Object target, String fieldName, LocalDate originalDate) {
+        Optional.ofNullable(ReflectionUtils.findField(target.getClass(), fieldName + DATE_FIELD_POSTFIX))
             .ifPresent(maskedField -> {
                 if (maskedField.getType() != String.class) return;
                 maskedField.setAccessible(true);
                 try {
-                    String maskedValue = originalDate != null ? MaskUtils.maskedLocalDate(originalDate) : null;
-                    maskedField.set(target, maskedValue);
+                    maskedField.set(target, originalDate != null ? MaskUtils.maskedLocalDate(originalDate) : null);
                 } catch (IllegalAccessException e) {
                     log.warn("Failed to set masked date field: {}", e.getMessage());
                 }
             });
     }
 
-    private static Optional<Field> findMaskedDateField(Class<?> clazz, String fieldName) {
-        Field field = org.springframework.util.ReflectionUtils.findField(clazz, fieldName);
-        return Optional.ofNullable(field);
-    }
-
-    private static boolean isCustomObject(Object obj) {
+    private static boolean isDto(Object obj) {
         return !obj.getClass().isPrimitive() &&
             !obj.getClass().isEnum() &&
             IMMUTABLE_TYPES.stream().noneMatch(type -> type.isInstance(obj)) &&

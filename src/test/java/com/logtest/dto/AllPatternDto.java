@@ -64,10 +64,10 @@ public class AllPatternDto {
     @MaskedProperty(type = MaskType.ISSUER_NAME)
     private String issuerName;
 
-    @MaskedProperty(type = MaskType.DATE_COPY)
+    @MaskedProperty(type = MaskType.LOCALDATE_FIELD_TO_STRING_FIELD)
     private LocalDate issuanceDate;
 
-    @MaskedProperty(type = MaskType.DATE_REPLACE)
+    @MaskedProperty(type = MaskType.LOCALDATE_TO_ZERO_DATE)
     private LocalDate someDate;
 
     private String issuanceDateMasked;

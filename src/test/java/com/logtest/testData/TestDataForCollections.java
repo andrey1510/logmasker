@@ -7,7 +7,6 @@ import com.logtest.dto.dtoForCollection.DtoWithMap;
 import com.logtest.dto.dtoForCollection.DtoWithSet;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 public abstract class TestDataForCollections {
 
@@ -248,4 +246,22 @@ public abstract class TestDataForCollections {
             ))
             .build();
     }
+
+    protected DtoWithList createEmptyArrayList() {
+        return DtoWithList.builder()
+            .isMasked(false)
+            .textField("some random text")
+            .dtos(new ArrayList<>())
+            .build();
+    }
+
+    protected DtoWithList createEmptyArrayListMasked() {
+        return DtoWithList.builder()
+            .isMasked(true)
+            .textField("som*****ext")
+            .dtos(new ArrayList<>())
+            .build();
+    }
+
+
 }

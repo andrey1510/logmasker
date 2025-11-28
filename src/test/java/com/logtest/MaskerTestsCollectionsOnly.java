@@ -14,6 +14,11 @@ public class MaskerTestsCollectionsOnly extends TestDataForCollections {
     }
 
     @Test
+    void testEmptyArrayList() {
+        assertEquals(createEmptyArrayListMasked(), Masker.mask(createEmptyArrayList()));
+    }
+
+    @Test
     void testLinkedList() {
         assertEquals(createLinkedListMasked(), Masker.mask(createLinkedList()));
     }
