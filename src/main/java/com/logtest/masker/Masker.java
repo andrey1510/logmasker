@@ -2,6 +2,7 @@ package com.logtest.masker;
 
 import com.logtest.masker.annotations.Masked;
 import com.logtest.masker.annotations.MaskedProperty;
+import com.logtest.masker.maskers.CollectionMasker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ReflectionUtils;
 
@@ -18,11 +19,9 @@ import java.util.Set;
 
 @Slf4j
 public class Masker {
+
     private static final String DATE_FIELD_POSTFIX = "Masked";
     private static final String ISMASKED_FIELD_NAME = "isMasked";
-    private static final Set<Class<?>> IMMUTABLE_TYPES = Set.of(
-        String.class, Number.class, Boolean.class, Character.class, LocalDate.class
-    );
 
     static {
         CollectionMasker.setMaskFunction(Masker::processRecursively);
@@ -33,15 +32,19 @@ public class Masker {
     }
 
     private static <T> T processRecursively(T dto, Map<Object, Object> processed) {
-        if (dto == null) return null;
-        if (processed.containsKey(dto)) return (T) processed.get(dto);
-        if (!dto.getClass().isAnnotationPresent(Masked.class)) return dto;
-
-        return createDtoMaskedInstance(dto, processed)
-            .orElseGet(() -> {
-                log.error("Error during masking: {}", dto.getClass().getSimpleName());
-                return dto;
-            });
+        if (dto == null) {
+            return null;
+        } else if (processed.containsKey(dto)) {
+            return (T) processed.get(dto);
+        } else if (!dto.getClass().isAnnotationPresent(Masked.class)) {
+            return dto;
+        } else {
+            return createDtoMaskedInstance(dto, processed)
+                .orElseGet(() -> {
+                    log.error("Error during masking: {}", dto.getClass().getSimpleName());
+                    return dto;
+                });
+        }
     }
 
     private static <T> Optional<T> createDtoMaskedInstance(T source, Map<Object, Object> processed) {
@@ -114,9 +117,10 @@ public class Masker {
     }
 
     private static Object processFieldValue(Field field, Object value, Map<Object, Object> processed) {
-        if (value == null) return null;
 
-        if (value instanceof String) {
+        if (value == null) {
+            return null;
+        } else if (value instanceof String) {
             return processStringValue(field, (String) value);
         } else if (value instanceof List) {
             return CollectionMasker.processList((List<?>) value, field, processed);
@@ -126,7 +130,7 @@ public class Masker {
             return CollectionMasker.processMap((Map<?, ?>) value, field, processed);
         } else if (value.getClass().isArray()) {
             return CollectionMasker.processArray(value, processed);
-        } else if (isDto(value)) {
+        } else if (value.getClass().isAnnotationPresent(Masked.class)) {
             return processRecursively(value, processed);
         } else {
             return value;
@@ -178,14 +182,6 @@ public class Masker {
                     log.warn("Failed to set masked date field: {}", e.getMessage());
                 }
             });
-    }
-
-    private static boolean isDto(Object obj) {
-        return !obj.getClass().isPrimitive() &&
-            !obj.getClass().isEnum() &&
-            IMMUTABLE_TYPES.stream().noneMatch(type -> type.isInstance(obj)) &&
-            !obj.getClass().getName().startsWith("java.") &&
-            !obj.getClass().getName().startsWith("javax.");
     }
 
     private static void setMaskedFlag(Object dto) {
