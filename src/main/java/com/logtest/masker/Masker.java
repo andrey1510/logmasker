@@ -170,7 +170,6 @@ public class Masker {
             case OTHER_DUL_SERIES -> MaskUtils.maskedOtherDulSeries(value);
             case OTHER_DUL_NUMBER -> MaskUtils.maskedOtherDulNumber(value);
             case DATE_COPY -> value;
-            case DATE_REPLACE -> DATE_REPLACEMENT;
             default -> value;
         };
     }
