@@ -19,7 +19,6 @@ import java.util.Set;
 @Slf4j
 public class Masker {
 
-    private static final String DATE_FIELD_POSTFIX = "Masked";
     private static final String ISMASKED_FIELD_NAME = "isMasked";
 
     static {
@@ -92,7 +91,7 @@ public class Masker {
 
         if (value == null) {
             return null;
-        } else if (value instanceof LocalDate && isLocalDateMaskedProperty(field)) {
+        } else if (value instanceof LocalDate && hasMaskedProperty(field)) {
             return MaskUtils.changeLocalDate((LocalDate) value);
         } else if (value instanceof String) {
             return processStringValue(field, (String) value);
@@ -111,7 +110,7 @@ public class Masker {
         }
     }
 
-    private static boolean isLocalDateMaskedProperty(Field field) {
+    private static boolean hasMaskedProperty(Field field) {
         MaskedProperty annotation = field.getAnnotation(MaskedProperty.class);
         return annotation != null && annotation.type() == MaskPatternType.LOCALDATE;
     }
