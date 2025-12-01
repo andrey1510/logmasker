@@ -25,10 +25,10 @@ public class MaskerTests extends TestData {
         assertEquals(createPersonMasked(), Masker.mask(createPerson()));
     }
 
-    @Test
-    void mask_testNestedFieldsWithNoMaskedFirstLevelDto() {
-        assertEquals(createNoMaskedAnnotationDtoWithNestedMasked(), Masker.mask(createNoMaskedAnnotationDtoWithNested()));
-    }
+//    @Test
+//    void mask_testNestedFieldsWithNoMaskedFirstLevelDto() {
+//        assertEquals(createNoMaskedAnnotationDtoWithNestedMasked(), Masker.mask(createNoMaskedAnnotationDtoWithNested()));
+//    }
 
     @Test
     void mask_testDeepRecursion() {

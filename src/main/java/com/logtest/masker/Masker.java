@@ -72,12 +72,6 @@ public class Masker {
             currentClass = currentClass.getSuperclass();
         }
 
-        processAllFields(source, target, fields, processed);
-    }
-
-    private static void processAllFields(
-        Object source, Object target, List<Field> fields, Map<Object, Object> processed
-    ) {
         fields.forEach(field -> {
             field.setAccessible(true);
             try {
