@@ -41,10 +41,10 @@ public class AllPatternDto {
     @MaskedProperty(type = MaskPatternType.PASSPORT_SERIES_AND_NUMBER)
     private String passportSeries;
 
-    @MaskedProperty(type = MaskPatternType.LOCALDATE)
+    @MaskedProperty(type = MaskPatternType.LOCAL_DATE)
     private LocalDate someDate;
 
-    @MaskedProperty(type = MaskPatternType.OFFSETDATETIME)
+    @MaskedProperty(type = MaskPatternType.OFFSET_DATE_TIME)
     private OffsetDateTime dateTime;
 
     private String notForMaskingField;

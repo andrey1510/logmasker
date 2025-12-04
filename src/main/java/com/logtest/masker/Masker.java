@@ -109,9 +109,9 @@ public class Masker {
 
     private static Object processTemporalValue(Field field, Object value) {
         return switch (field.getAnnotation(MaskedProperty.class).type()) {
-            case LOCALDATE -> value instanceof LocalDate date ?
+            case LOCAL_DATE -> value instanceof LocalDate date ?
                 MaskPatterns.maskLocalDate(date) : value;
-            case OFFSETDATETIME -> value instanceof OffsetDateTime dateTime ?
+            case OFFSET_DATE_TIME -> value instanceof OffsetDateTime dateTime ?
                 MaskPatterns.maskOffsetDateTime(dateTime) : value;
             default -> value;
         };

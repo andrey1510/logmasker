@@ -22,7 +22,7 @@ public class Passport {
     @MaskedProperty(type = MaskPatternType.PASSPORT_SERIES_AND_NUMBER)
     private String passportSeriesAndNumber;
 
-    @MaskedProperty(type = MaskPatternType.LOCALDATE)
+    @MaskedProperty(type = MaskPatternType.LOCAL_DATE)
     private LocalDate issuanceDate;
 
 }

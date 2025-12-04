@@ -22,7 +22,7 @@ public class IdDocument {
     @MaskedProperty(type = MaskPatternType.AUTH_DATA)
     private String dulNumber;
 
-    @MaskedProperty(type = MaskPatternType.LOCALDATE)
+    @MaskedProperty(type = MaskPatternType.LOCAL_DATE)
     private LocalDate someDate;
 
 }
