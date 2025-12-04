@@ -3,12 +3,13 @@ package com.logtest.masker;
 import com.logtest.masker.annotations.Masked;
 import com.logtest.masker.annotations.MaskedProperty;
 import com.logtest.masker.utils.CollectionProcessor;
-import com.logtest.masker.utils.MaskPatternType;
 import com.logtest.masker.utils.MaskPatterns;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -88,8 +89,8 @@ public class Masker {
 
         if (value == null) {
             return null;
-        } else if (value instanceof LocalDate && hasMaskedProperty(field)) {
-            return MaskPatterns.maskLocalDate((LocalDate) value);
+        } else if (value instanceof Temporal) {
+            return processTemporalValue(field, value);
         } else if (value instanceof String) {
             return processStringValue(field, (String) value);
         } else if (value instanceof List) {
@@ -107,9 +108,16 @@ public class Masker {
         }
     }
 
-    private static boolean hasMaskedProperty(Field field) {
-        MaskedProperty annotation = field.getAnnotation(MaskedProperty.class);
-        return annotation != null && annotation.type() == MaskPatternType.LOCALDATE;
+    private static Object processTemporalValue(Field field, Object value) {
+        return Optional.ofNullable(field.getAnnotation(MaskedProperty.class))
+            .map(annotation -> switch (annotation.type()) {
+                case LOCALDATE -> value instanceof LocalDate date ?
+                    MaskPatterns.maskLocalDate(date) : value;
+                case OFFSETDATETIME -> value instanceof OffsetDateTime dateTime ?
+                    MaskPatterns.maskOffsetDateTime(dateTime) : value;
+                default -> value;
+            })
+            .orElse(value);
     }
 
     private static String processStringValue(Field field, String value) {
@@ -136,11 +144,11 @@ public class Masker {
             if (maskedField.getType() == boolean.class || maskedField.getType() == Boolean.class) {
                 maskedField.set(dto, true);
             } else {
-                log.error("Wrong type of isMasked field in class {}", dto.getClass().getSimpleName());
+                log.info("Wrong type of isMasked field in class {}", dto.getClass().getSimpleName());
             }
 
         } catch (Exception e) {
-            log.error("Error setting isMasked flag  in class {} : {}", dto.getClass().getSimpleName(), e.getMessage());
+            log.info("Error setting isMasked flag  in class {} : {}", dto.getClass().getSimpleName(), e.getMessage());
         }
     }
 }

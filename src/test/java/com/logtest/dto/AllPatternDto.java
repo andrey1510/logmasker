@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 @Masked
 @Builder
@@ -43,8 +44,8 @@ public class AllPatternDto {
     @MaskedProperty(type = MaskPatternType.LOCALDATE)
     private LocalDate someDate;
 
-    @MaskedProperty(type = MaskPatternType.LOCALDATE)
-    private LocalDate anotherDate;
+    @MaskedProperty(type = MaskPatternType.OFFSETDATETIME)
+    private OffsetDateTime dateTime;
 
     private String notForMaskingField;
 }

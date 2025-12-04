@@ -6,6 +6,7 @@ public enum MaskPatternType {
     FULL_NAME,
     EMAIL,
     LOCALDATE,
+    OFFSETDATETIME,
     FULL_ADDRESS,
     SURNAME,
     AUTH_DATA,

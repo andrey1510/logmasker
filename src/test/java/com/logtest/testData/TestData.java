@@ -14,6 +14,8 @@ import com.logtest.dto.nestedDto.Passport;
 import com.logtest.dto.nestedDto.Person;
 
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 
@@ -151,7 +153,7 @@ public abstract class TestData {
             .passportSeries(PASSPORT)
             .textField(TEXT)
             .someDate(LocalDate.of(2001, 4, 3))
-            .anotherDate(LocalDate.of(1988, 2, 1))
+            .dateTime(OffsetDateTime.of(2023, 4, 4, 4, 4, 4, 4, ZoneOffset.UTC))
             .notForMaskingField(NOT_MASKED_TEXT)
             .build();
     }
@@ -167,7 +169,7 @@ public abstract class TestData {
             .passportSeries(PASSPORT_MASKED)
             .textField(TEXT_MASKED)
             .someDate(LocalDate.of(0, 1, 1))
-            .anotherDate(LocalDate.of(0, 1, 1))
+            .dateTime(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
             .notForMaskingField(NOT_MASKED_TEXT)
             .build();
     }
