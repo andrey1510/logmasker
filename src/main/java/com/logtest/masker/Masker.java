@@ -3,12 +3,10 @@ package com.logtest.masker;
 import com.logtest.masker.annotations.Masked;
 import com.logtest.masker.annotations.MaskedProperty;
 import com.logtest.masker.utils.CollectionProcessor;
-import com.logtest.masker.utils.MaskPatterns;
+import com.logtest.masker.patterns.DepartmentSelector;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,10 +87,10 @@ public class Masker {
 
         if (value == null) {
             return null;
-        } else if (value instanceof Temporal) {
-            return processTemporalValue(field, value);
-        } else if (value instanceof String) {
-            return processStringValue(field, (String) value);
+        } else if (value instanceof Temporal  && field.getAnnotation(MaskedProperty.class) != null) {
+            return DepartmentSelector.maskTemporal(field, value);
+        } else if (value instanceof String && field.getAnnotation(MaskedProperty.class) != null) {
+            return DepartmentSelector.maskString(field, (String) value);
         } else if (value instanceof List) {
             return CollectionProcessor.processList((List<?>) value, field, processed);
         } else if (value instanceof Set) {
@@ -106,34 +104,6 @@ public class Masker {
         } else {
             return value;
         }
-    }
-
-    private static Object processTemporalValue(Field field, Object value) {
-        return Optional.ofNullable(field.getAnnotation(MaskedProperty.class))
-            .map(annotation -> switch (annotation.type()) {
-                case LOCALDATE -> value instanceof LocalDate date ?
-                    MaskPatterns.maskLocalDate(date) : value;
-                case OFFSETDATETIME -> value instanceof OffsetDateTime dateTime ?
-                    MaskPatterns.maskOffsetDateTime(dateTime) : value;
-                default -> value;
-            })
-            .orElse(value);
-    }
-
-    private static String processStringValue(Field field, String value) {
-        return Optional.ofNullable(field.getAnnotation(MaskedProperty.class))
-            .map(annotation -> switch (annotation.type()) {
-                case CUSTOM -> value.replaceAll(annotation.pattern(), annotation.replacement());
-                case TEXT_FIELD -> MaskPatterns.maskTextField(value);
-                case FULL_NAME -> MaskPatterns.maskFullName(value);
-                case FULL_ADDRESS -> MaskPatterns.maskFullAddress(value);
-                case EMAIL -> MaskPatterns.maskEmail(value);
-                case SURNAME -> MaskPatterns.maskSurname(value);
-                case AUTH_DATA -> MaskPatterns.maskAuthData(value);
-                case PASSPORT_SERIES_AND_NUMBER -> MaskPatterns.maskPassportSeriesAndNumber(value);
-                default -> value;
-            })
-            .orElse(value);
     }
 
     private static void setMaskedFlag(Object dto) {
