@@ -86,13 +86,12 @@ public class Masker {
     }
 
     private static Object processFieldValue(Field field, Object value, Map<Object, Object> processed) {
-
         if (value == null) {
             return null;
-        } else if (value instanceof Temporal) {
-            return processTemporalValue(field, value);
-        } else if (value instanceof String) {
+        } else if (value instanceof String && field.getAnnotation(MaskedProperty.class) != null) {
             return processStringValue(field, (String) value);
+        } else if (value instanceof Temporal && field.getAnnotation(MaskedProperty.class) != null) {
+            return processTemporalValue(field, value);
         } else if (value instanceof List) {
             return CollectionProcessor.processList((List<?>) value, field, processed);
         } else if (value instanceof Set) {
@@ -109,31 +108,26 @@ public class Masker {
     }
 
     private static Object processTemporalValue(Field field, Object value) {
-        return Optional.ofNullable(field.getAnnotation(MaskedProperty.class))
-            .map(annotation -> switch (annotation.type()) {
-                case LOCALDATE -> value instanceof LocalDate date ?
-                    MaskPatterns.maskLocalDate(date) : value;
-                case OFFSETDATETIME -> value instanceof OffsetDateTime dateTime ?
-                    MaskPatterns.maskOffsetDateTime(dateTime) : value;
-                default -> value;
-            })
-            .orElse(value);
+        return switch (field.getAnnotation(MaskedProperty.class).type()) {
+            case LOCALDATE -> value instanceof LocalDate date ?
+                MaskPatterns.maskLocalDate(date) : value;
+            case OFFSETDATETIME -> value instanceof OffsetDateTime dateTime ?
+                MaskPatterns.maskOffsetDateTime(dateTime) : value;
+            default -> value;
+        };
     }
 
     private static String processStringValue(Field field, String value) {
-        return Optional.ofNullable(field.getAnnotation(MaskedProperty.class))
-            .map(annotation -> switch (annotation.type()) {
-                case CUSTOM -> value.replaceAll(annotation.pattern(), annotation.replacement());
-                case TEXT_FIELD -> MaskPatterns.maskTextField(value);
-                case FULL_NAME -> MaskPatterns.maskFullName(value);
-                case FULL_ADDRESS -> MaskPatterns.maskFullAddress(value);
-                case EMAIL -> MaskPatterns.maskEmail(value);
-                case SURNAME -> MaskPatterns.maskSurname(value);
-                case AUTH_DATA -> MaskPatterns.maskAuthData(value);
-                case PASSPORT_SERIES_AND_NUMBER -> MaskPatterns.maskPassportSeriesAndNumber(value);
-                default -> value;
-            })
-            .orElse(value);
+        return switch (field.getAnnotation(MaskedProperty.class).type()) {
+            case TEXT_FIELD -> MaskPatterns.maskTextField(value);
+            case FULL_NAME -> MaskPatterns.maskFullName(value);
+            case FULL_ADDRESS -> MaskPatterns.maskFullAddress(value);
+            case EMAIL -> MaskPatterns.maskEmail(value);
+            case SURNAME -> MaskPatterns.maskSurname(value);
+            case AUTH_DATA -> MaskPatterns.maskAuthData(value);
+            case PASSPORT_SERIES_AND_NUMBER -> MaskPatterns.maskPassportSeriesAndNumber(value);
+            default -> value;
+        };
     }
 
     private static void setMaskedFlag(Object dto) {
@@ -148,7 +142,7 @@ public class Masker {
             }
 
         } catch (Exception e) {
-            log.info("Error setting isMasked flag  in class {} : {}", dto.getClass().getSimpleName(), e.getMessage());
+            log.info("isMasked flag couldn't be set in class {} : {}", dto.getClass().getSimpleName(), e.getMessage());
         }
     }
 }

@@ -10,7 +10,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MaskedProperty {
-    MaskPatternType type() default MaskPatternType.CUSTOM;
-    String pattern() default "";
-    String replacement() default "";
+    MaskPatternType type();
 }
