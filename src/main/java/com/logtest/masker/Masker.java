@@ -4,6 +4,7 @@ import com.logtest.masker.annotations.Masked;
 import com.logtest.masker.annotations.MaskedProperty;
 import com.logtest.masker.utils.CollectionProcessor;
 import com.logtest.masker.utils.MaskPatterns;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -130,19 +131,13 @@ public class Masker {
         };
     }
 
+    @SneakyThrows
     private static void setMaskedFlag(Object dto) {
-        try {
-            Field maskedField = dto.getClass().getDeclaredField(ISMASKED_FIELD_NAME);
-            maskedField.setAccessible(true);
 
-            if (maskedField.getType() == boolean.class || maskedField.getType() == Boolean.class) {
-                maskedField.set(dto, true);
-            } else {
-                log.info("Wrong type of isMasked field in class {}", dto.getClass().getSimpleName());
-            }
+        Field maskedField = dto.getClass().getDeclaredField(ISMASKED_FIELD_NAME);
+        maskedField.setAccessible(true);
 
-        } catch (Exception e) {
-            log.info("isMasked flag couldn't be set in class {} : {}", dto.getClass().getSimpleName(), e.getMessage());
-        }
+        if (maskedField.getType() == boolean.class || maskedField.getType() == Boolean.class)
+            maskedField.set(dto, true);
     }
 }
