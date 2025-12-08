@@ -118,6 +118,10 @@ public class Masker {
             case SURNAME -> MaskPatterns.maskSurname(value);
             case AUTH_DATA -> MaskPatterns.maskAuthData(value);
             case PASSPORT_SERIES_AND_NUMBER -> MaskPatterns.maskPassportSeriesAndNumber(value);
+            case INN -> MaskPatterns.maskInn(value);
+            case KPP -> MaskPatterns.maskKpp(value);
+            case OKPO -> MaskPatterns.maskOkpo(value);
+            case OGRNUL_OR_OGRNIP -> MaskPatterns.maskOgrnulOrOgrnip(value);
             default -> value;
         };
     }

@@ -47,5 +47,8 @@ public class AllPatternDto {
     @MaskedProperty(type = MaskPatternType.OFFSET_DATE_TIME)
     private OffsetDateTime dateTime;
 
+    @MaskedProperty(type = MaskPatternType.INN)
+    private String inn;
+
     private String notForMaskingField;
 }

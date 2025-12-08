@@ -10,4 +10,8 @@ public enum MaskPatternType {
     SURNAME,
     AUTH_DATA,
     PASSPORT_SERIES_AND_NUMBER,
+    INN,
+    KPP,
+    OGRNUL_OR_OGRNIP,
+    OKPO
 }

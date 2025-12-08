@@ -42,6 +42,9 @@ public abstract class TestData {
     private static final String FULL_NAME = "Иванов Иван Иванович";
     private static final String FULL_NAME_MASKED = "И*** Иван Иванович";
     private static final String NOT_MASKED_TEXT = "not to be masked";
+    private static final String INN = "642125911472";
+    private static final String INN_MASKED = "64*****11472";
+
 
     protected Account createAccount1() {
         return Account.builder()
@@ -153,6 +156,7 @@ public abstract class TestData {
             .pan(AUTH_2)
             .passportSeries(PASSPORT)
             .textField(TEXT)
+            .inn(INN)
             .someDate(LocalDate.of(2001, 4, 3))
             .dateTime(OffsetDateTime.of(2023, 4, 4, 4, 4, 4, 4, ZoneOffset.UTC))
             .notForMaskingField(NOT_MASKED_TEXT)
@@ -169,6 +173,7 @@ public abstract class TestData {
             .pan(AUTH_MASKED)
             .passportSeries(PASSPORT_MASKED)
             .textField(TEXT_MASKED)
+            .inn(INN_MASKED)
             .someDate(LocalDate.of(0, 1, 1))
             .dateTime(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
             .notForMaskingField(NOT_MASKED_TEXT)
@@ -301,6 +306,9 @@ public abstract class TestData {
             .phoneNumber(PHONE_MASKED)
             .build();
     }
+
+
+
 }
 
 

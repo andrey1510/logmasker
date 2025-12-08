@@ -8,6 +8,56 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class MailPatternsTests {
 
     @Test
+    void maskInn_test() {
+
+        assertEquals("64*****632", MaskPatterns.maskInn("6454093632"));
+        assertEquals("64*****11472", MaskPatterns.maskInn("642125911472"));
+        assertEquals("64*****632", MaskPatterns.maskInn(" 6454093632 "));
+        assertEquals("64*****11472", MaskPatterns.maskInn(" 642125911472 "));
+        assertEquals("64540", MaskPatterns.maskInn("64540"));
+        assertEquals("6454011111111111111111111", MaskPatterns.maskInn("6454011111111111111111111"));
+        assertEquals("не инн", MaskPatterns.maskInn("не инн"));
+        assertEquals("", MaskPatterns.maskInn(""));
+
+    }
+
+
+    @Test
+    void maskKpp_test() {
+
+        assertEquals("64******3", MaskPatterns.maskKpp("645401003"));
+        assertEquals("64540", MaskPatterns.maskKpp("64540"));
+        assertEquals("6454011111111111111111111", MaskPatterns.maskKpp("6454011111111111111111111"));
+        assertEquals("не кпп", MaskPatterns.maskKpp("не кпп"));
+        assertEquals("", MaskPatterns.maskKpp(""));
+
+    }
+
+    @Test
+    void maskOkpo_test() {
+
+        assertEquals("00*****5", MaskPatterns.maskOkpo("00002335"));
+        assertEquals("0002*****9", MaskPatterns.maskOkpo("0002870479"));
+        assertEquals("64540", MaskPatterns.maskOkpo("64540"));
+        assertEquals("6454011111111111111111111", MaskPatterns.maskOkpo("6454011111111111111111111"));
+        assertEquals("не окпо", MaskPatterns.maskOkpo("не окпо"));
+        assertEquals("", MaskPatterns.maskOkpo(""));
+
+    }
+
+    @Test
+    void maskOgrnulOrOgrnip_test() {
+
+        assertEquals("12*******5220", MaskPatterns.maskOgrnulOrOgrnip("1215573935220"));
+        assertEquals("12*********2345", MaskPatterns.maskOgrnulOrOgrnip("123456789012345"));
+        assertEquals("64540", MaskPatterns.maskOgrnulOrOgrnip("64540"));
+        assertEquals("6454011111111111111111111", MaskPatterns.maskOgrnulOrOgrnip("6454011111111111111111111"));
+        assertEquals("не огрн", MaskPatterns.maskOgrnulOrOgrnip("не огрн"));
+        assertEquals("", MaskPatterns.maskOgrnulOrOgrnip(""));
+
+    }
+
+    @Test
     void maskSurname_test() {
         assertEquals("П***", MaskPatterns.maskSurname("Петров"));
         assertEquals("П***", MaskPatterns.maskSurname("Прокофьев-Северский"));
