@@ -4,6 +4,7 @@ import com.logtest.masker.annotations.Masked;
 import com.logtest.masker.annotations.MaskedProperty;
 import com.logtest.masker.utils.CollectionProcessor;
 import com.logtest.masker.utils.MaskPatterns;
+import com.logtest.masker.utils.MaskPatternsAdditional;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -102,26 +103,26 @@ public class Masker {
     private static Object processTemporalValue(Field field, Object value) {
         return switch (field.getAnnotation(MaskedProperty.class).type()) {
             case LOCAL_DATE -> value instanceof LocalDate date ?
-                MaskPatterns.maskLocalDate(date) : value;
+                MaskPatternsAdditional.maskLocalDate(date) : value;
             case OFFSET_DATE_TIME -> value instanceof OffsetDateTime dateTime ?
-                MaskPatterns.maskOffsetDateTime(dateTime) : value;
+                MaskPatternsAdditional.maskOffsetDateTime(dateTime) : value;
             default -> value;
         };
     }
 
     private static String processStringValue(Field field, String value) {
         return switch (field.getAnnotation(MaskedProperty.class).type()) {
-            case TEXT_FIELD -> MaskPatterns.maskTextField(value);
-            case FULL_NAME -> MaskPatterns.maskFullName(value);
-            case FULL_ADDRESS -> MaskPatterns.maskFullAddress(value);
-            case EMAIL -> MaskPatterns.maskEmail(value);
-            case SURNAME -> MaskPatterns.maskSurname(value);
-            case AUTH_DATA -> MaskPatterns.maskAuthData(value);
-            case PASSPORT_SERIES_AND_NUMBER -> MaskPatterns.maskPassportSeriesAndNumber(value);
+            case TEXT_FIELD -> MaskPatternsAdditional.maskTextField(value);
+            case FULL_NAME -> MaskPatternsAdditional.maskFullName(value);
+            case FULL_ADDRESS -> MaskPatternsAdditional.maskFullAddress(value);
+            case EMAIL -> MaskPatternsAdditional.maskEmail(value);
+            case SURNAME -> MaskPatternsAdditional.maskSurname(value);
+            case AUTH_DATA -> MaskPatternsAdditional.maskAuthData(value);
+            case PASSPORT_SERIES_AND_NUMBER -> MaskPatternsAdditional.maskPassportSeriesAndNumber(value);
             case INN -> MaskPatterns.maskInn(value);
             case KPP -> MaskPatterns.maskKpp(value);
             case OKPO -> MaskPatterns.maskOkpo(value);
-            case OGRNUL_OR_OGRNIP -> MaskPatterns.maskOgrnulOrOgrnip(value);
+            case OGRNUL_OR_OGRNIP -> MaskPatterns.maskOgrnUlOrOgrnIp(value);
             default -> value;
         };
     }

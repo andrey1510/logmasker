@@ -7,8 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +33,7 @@ public class CollectionProcessor {
     public static Set<?> processSet(Set<?> set, Field field, Map<Object, Object> processed) {
         return set.stream()
             .map(item -> processElement(item, field, processed))
-            .collect(Collectors.toCollection(HashSet::new));
+            .collect(Collectors.toCollection(() -> Collections.newSetFromMap(new IdentityHashMap<>())));
     }
 
     public static Map<?, ?> processMap(Map<?, ?> map, Field field, Map<Object, Object> processed) {

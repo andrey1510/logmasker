@@ -28,7 +28,7 @@ public abstract class TestDataForCollections {
     private static final String PHONE_1_MASKED = "79*******12";
     private static final String PHONE_2 = "89058453318";
     private static final String PHONE_2_MASKED = "89*******18";
-
+    private static final String PHONE_3 = "89058003318";
 
     protected CollectionElement createCollectionElement1() {
         return CollectionElement.builder()
@@ -48,6 +48,20 @@ public abstract class TestDataForCollections {
         return CollectionElement.builder()
             .isMasked(false)
             .phoneNumber(PHONE_2 )
+            .build();
+    }
+
+    protected CollectionElement createCollectionElement3Masked() {
+        return CollectionElement.builder()
+            .isMasked(true)
+            .phoneNumber(PHONE_2_MASKED)
+            .build();
+    }
+
+    protected CollectionElement createCollectionElement3() {
+        return CollectionElement.builder()
+            .isMasked(false)
+            .phoneNumber(PHONE_3)
             .build();
     }
 
@@ -138,6 +152,14 @@ public abstract class TestDataForCollections {
             .build();
     }
 
+    protected DtoWithSet createHashSet2() {
+        return DtoWithSet.builder()
+            .isMasked(false)
+            .textField(TEXT)
+            .dtos(new HashSet<>(Set.of(createCollectionElement2(), createCollectionElement3())))
+            .build();
+    }
+
     protected DtoWithSet createLinkedHashSet() {
         return DtoWithSet.builder()
             .isMasked(false)
@@ -167,6 +189,14 @@ public abstract class TestDataForCollections {
             .isMasked(true)
             .textField(TEXT_MASKED)
             .dtos(Set.of(createCollectionElement1Masked(), createCollectionElement2Masked()))
+            .build();
+    }
+
+    protected DtoWithSet createSetImmutable2() {
+        return DtoWithSet.builder()
+            .isMasked(false)
+            .textField(TEXT)
+            .dtos(Set.of(createCollectionElement2(), createCollectionElement3()))
             .build();
     }
 

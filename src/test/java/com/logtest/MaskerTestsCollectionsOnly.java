@@ -77,4 +77,17 @@ public class MaskerTestsCollectionsOnly extends TestDataForCollections {
         assertEquals(result.getDtos().element().getPhoneNumber(), expected.getDtos().element().getPhoneNumber());
     }
 
+    @Test
+    void mask_testSetEqualMaskedFieldValues() {
+
+        String expected = "DtoWithSet(isMasked=true, textField=som**********ext, dtos=[" +
+            "CollectionElement(isMasked=true, phoneNumber=89*******18), " +
+            "CollectionElement(isMasked=true, phoneNumber=89*******18)])";
+
+        assertEquals(expected, Masker.mask(createHashSet2()).toString());
+        assertEquals(expected, Masker.mask(createSetImmutable2()).toString());
+
+
+    }
+
 }
