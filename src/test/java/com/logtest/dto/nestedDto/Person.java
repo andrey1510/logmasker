@@ -20,13 +20,13 @@ public class Person {
 
     private boolean isMasked;
 
-    @MaskedProperty(type = MaskPatternType.FULL_NAME)
+    @MaskedProperty(type = MaskPatternType.FULL_NAME_ALT)
     private String fullname;
 
-    @MaskedProperty(type = MaskPatternType.EMAIL)
+    @MaskedProperty(type = MaskPatternType.EMAIL_ALT)
     private String email;
 
-    @MaskedProperty(type = MaskPatternType.TEXT_FIELD)
+    @MaskedProperty(type = MaskPatternType.TEXT_FIELD_ALT)
     private String textField;
 
     private Passport passport;

@@ -85,4 +85,10 @@ public class MaskerTests extends TestData {
         assertEquals(createDtoWithBooleanMasked(), Masker.mask(createDtoWithBoolean()));
     }
 
+    @Test
+    void mask_testbjectFieldDto() {
+        System.out.println(createObjectFieldDtoMasked());
+        System.out.println(createObjectFieldDto());
+        assertEquals(createObjectFieldDtoMasked(), Masker.mask(createObjectFieldDto()));
+    }
 }

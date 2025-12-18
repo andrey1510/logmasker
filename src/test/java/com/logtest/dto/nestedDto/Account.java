@@ -8,8 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Masked
 @Builder
 @Data
@@ -19,7 +17,7 @@ public class Account {
 
     private boolean isMasked;
 
-    @MaskedProperty(type = MaskPatternType.SURNAME)
+    @MaskedProperty(type = MaskPatternType.SURNAME_ALT)
     private String surname;
 
 }

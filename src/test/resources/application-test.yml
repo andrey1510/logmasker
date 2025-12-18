@@ -5,10 +5,8 @@ spring:
         config:
           default:
             logger-level: FULL
-          sample-external-service:
+          test-external-service:
             logger-level: FULL
-  application:
-    name: logtest
 
 server:
   port: 8888
@@ -18,7 +16,7 @@ service-name:
     should-not-log-request-headers: Authorization, jwt
     should-not-log-response-headers: jwt
 
-sample-external-service:
+test-external-service:
   url: http://localhost:8888
 
 logging:

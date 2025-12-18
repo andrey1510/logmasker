@@ -5,7 +5,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.regex.Pattern;
 
-public class MaskPatternsAdditional {
+public class MaskPatternsAlt {
 
     private static final LocalDate LOCALDATE_REPLACEMENT = LocalDate.of(0, 1, 1);
     private static final OffsetDateTime OFFSETDATETIME_REPLACEMENT = OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC);

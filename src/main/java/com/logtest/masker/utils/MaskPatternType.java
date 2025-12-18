@@ -1,17 +1,20 @@
 package com.logtest.masker.utils;
 
 public enum MaskPatternType {
-    TEXT_FIELD,
-    FULL_NAME,
+    TEXT_FIELD_ALT,
+    FULL_NAME_ALT,
     EMAIL,
+    EMAIL_ALT,
     LOCAL_DATE,
     OFFSET_DATE_TIME,
-    FULL_ADDRESS,
-    SURNAME,
-    AUTH_DATA,
-    PASSPORT_SERIES_AND_NUMBER,
+    FULL_ADDRESS_ALT,
+    SURNAME_ALT,
+    AUTH_DATA_ALT,
+    PASSPORT_SERIES_AND_NUMBER_ALT,
     INN,
     KPP,
     OGRNUL_OR_OGRNIP,
-    OKPO
+    OKPO,
+    JWT_TYK_API_KEY_IP_ADDRESS, // new
+    PHONE //new
 }

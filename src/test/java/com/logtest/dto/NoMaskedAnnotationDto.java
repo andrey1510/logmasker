@@ -15,6 +15,6 @@ public class NoMaskedAnnotationDto {
 
     private boolean isMasked;
 
-    @MaskedProperty(type = MaskPatternType.AUTH_DATA)
+    @MaskedProperty(type = MaskPatternType.AUTH_DATA_ALT)
     private String pin;
 }

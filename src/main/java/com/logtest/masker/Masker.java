@@ -4,7 +4,7 @@ import com.logtest.masker.annotations.Masked;
 import com.logtest.masker.annotations.MaskedProperty;
 import com.logtest.masker.utils.CollectionProcessor;
 import com.logtest.masker.utils.MaskPatterns;
-import com.logtest.masker.utils.MaskPatternsAdditional;
+import com.logtest.masker.utils.MaskPatternsAlt;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -103,26 +103,28 @@ public class Masker {
     private static Object processTemporalValue(Field field, Object value) {
         return switch (field.getAnnotation(MaskedProperty.class).type()) {
             case LOCAL_DATE -> value instanceof LocalDate date ?
-                MaskPatternsAdditional.maskLocalDate(date) : value;
+                MaskPatternsAlt.maskLocalDate(date) : value;
             case OFFSET_DATE_TIME -> value instanceof OffsetDateTime dateTime ?
-                MaskPatternsAdditional.maskOffsetDateTime(dateTime) : value;
+                MaskPatternsAlt.maskOffsetDateTime(dateTime) : value;
             default -> value;
         };
     }
 
     private static String processStringValue(Field field, String value) {
         return switch (field.getAnnotation(MaskedProperty.class).type()) {
-            case TEXT_FIELD -> MaskPatternsAdditional.maskTextField(value);
-            case FULL_NAME -> MaskPatternsAdditional.maskFullName(value);
-            case FULL_ADDRESS -> MaskPatternsAdditional.maskFullAddress(value);
-            case EMAIL -> MaskPatternsAdditional.maskEmail(value);
-            case SURNAME -> MaskPatternsAdditional.maskSurname(value);
-            case AUTH_DATA -> MaskPatternsAdditional.maskAuthData(value);
-            case PASSPORT_SERIES_AND_NUMBER -> MaskPatternsAdditional.maskPassportSeriesAndNumber(value);
+            case EMAIL -> MaskPatterns.maskEmail(value);
             case INN -> MaskPatterns.maskInn(value);
             case KPP -> MaskPatterns.maskKpp(value);
             case OKPO -> MaskPatterns.maskOkpo(value);
             case OGRNUL_OR_OGRNIP -> MaskPatterns.maskOgrnUlOrOgrnIp(value);
+            case TEXT_FIELD_ALT -> MaskPatternsAlt.maskTextField(value);
+            case FULL_NAME_ALT -> MaskPatternsAlt.maskFullName(value);
+            case FULL_ADDRESS_ALT -> MaskPatternsAlt.maskFullAddress(value);
+            case EMAIL_ALT -> MaskPatternsAlt.maskEmail(value);
+            case SURNAME_ALT -> MaskPatternsAlt.maskSurname(value);
+            case AUTH_DATA_ALT -> MaskPatternsAlt.maskAuthData(value);
+            case PASSPORT_SERIES_AND_NUMBER_ALT -> MaskPatternsAlt.maskPassportSeriesAndNumber(value);
+            case JWT_TYK_API_KEY_IP_ADDRESS -> MaskPatterns.maskJwtTykApiKeyIpAddress(value);
             default -> value;
         };
     }

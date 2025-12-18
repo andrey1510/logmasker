@@ -1,7 +1,7 @@
 package com.logtest;
 
 import com.logtest.masker.utils.MaskPatterns;
-import com.logtest.masker.utils.MaskPatternsAdditional;
+import com.logtest.masker.utils.MaskPatternsAlt;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -60,85 +60,85 @@ public class MailPatternsTests {
 
     @Test
     void maskSurname_test() {
-        assertEquals("П***", MaskPatternsAdditional.maskSurname("Петров"));
-        assertEquals("П***", MaskPatternsAdditional.maskSurname("Прокофьев-Северский"));
-        assertEquals("д***", MaskPatternsAdditional.maskSurname("д'Альбер"));
-        assertEquals("д***", MaskPatternsAdditional.maskSurname("де Ореллана"));
-        assertEquals("И", MaskPatternsAdditional.maskSurname("И"));
-        assertEquals("", MaskPatternsAdditional.maskSurname(""));
+        assertEquals("П***", MaskPatternsAlt.maskSurname("Петров"));
+        assertEquals("П***", MaskPatternsAlt.maskSurname("Прокофьев-Северский"));
+        assertEquals("д***", MaskPatternsAlt.maskSurname("д'Альбер"));
+        assertEquals("д***", MaskPatternsAlt.maskSurname("де Ореллана"));
+        assertEquals("И", MaskPatternsAlt.maskSurname("И"));
+        assertEquals("", MaskPatternsAlt.maskSurname(""));
     }
 
     @Test
     void maskEmail_test() {
-        assertEquals("****@mail.com", MaskPatternsAdditional.maskEmail("test@mail.com"));
-        assertEquals("@mail.com", MaskPatternsAdditional.maskEmail("@mail.com"));
-        assertEquals("******@mail.com", MaskPatternsAdditional.maskEmail("test.m@mail.com"));
-        assertEquals("", MaskPatternsAdditional.maskEmail(""));
-        assertEquals("test", MaskPatternsAdditional.maskEmail("test"));
+        assertEquals("****@mail.com", MaskPatternsAlt.maskEmail("test@mail.com"));
+        assertEquals("@mail.com", MaskPatternsAlt.maskEmail("@mail.com"));
+        assertEquals("******@mail.com", MaskPatternsAlt.maskEmail("test.m@mail.com"));
+        assertEquals("", MaskPatternsAlt.maskEmail(""));
+        assertEquals("test", MaskPatternsAlt.maskEmail("test"));
     }
 
     @Test
     void maskFullName_test() {
-        assertEquals("И***", MaskPatternsAdditional.maskFullName("Иванов"));
-        assertEquals("П*** Иван Иванович", MaskPatternsAdditional.maskFullName("Прокофьев-Северский Иван Иванович"));
-        assertEquals("И Ли Сын", MaskPatternsAdditional.maskFullName("И Ли Сын"));
-        assertEquals("", MaskPatternsAdditional.maskFullName(""));
+        assertEquals("И***", MaskPatternsAlt.maskFullName("Иванов"));
+        assertEquals("П*** Иван Иванович", MaskPatternsAlt.maskFullName("Прокофьев-Северский Иван Иванович"));
+        assertEquals("И Ли Сын", MaskPatternsAlt.maskFullName("И Ли Сын"));
+        assertEquals("", MaskPatternsAlt.maskFullName(""));
     }
 
     @Test
     void maskFullAddress_test() {
-        assertEquals("Москва, ул. Лес**********", MaskPatternsAdditional.maskFullAddress("Москва, ул. Лесная, д. 15"));
-        assertEquals("Санкт**********", MaskPatternsAdditional.maskFullAddress("Санкт-Петербург"));
-        assertEquals("******", MaskPatternsAdditional.maskFullAddress("Москва"));
-        assertEquals("", MaskPatternsAdditional.maskFullAddress(""));
+        assertEquals("Москва, ул. Лес**********", MaskPatternsAlt.maskFullAddress("Москва, ул. Лесная, д. 15"));
+        assertEquals("Санкт**********", MaskPatternsAlt.maskFullAddress("Санкт-Петербург"));
+        assertEquals("******", MaskPatternsAlt.maskFullAddress("Москва"));
+        assertEquals("", MaskPatternsAlt.maskFullAddress(""));
     }
 
     @Test
     void maskAuthData_test() {
-        assertEquals("***", MaskPatternsAdditional.maskAuthData("ASD 452345"));
-        assertEquals("***", MaskPatternsAdditional.maskAuthData("52"));
-        assertEquals("***", MaskPatternsAdditional.maskAuthData("333-666"));
-        assertEquals("", MaskPatternsAdditional.maskAuthData(""));
+        assertEquals("***", MaskPatternsAlt.maskAuthData("ASD 452345"));
+        assertEquals("***", MaskPatternsAlt.maskAuthData("52"));
+        assertEquals("***", MaskPatternsAlt.maskAuthData("333-666"));
+        assertEquals("", MaskPatternsAlt.maskAuthData(""));
     }
 
     @Test
     void maskTextField_test() {
 
-        assertEquals("", MaskPatternsAdditional.maskTextField(""));
-        assertEquals("*", MaskPatternsAdditional.maskTextField("1"));
-        assertEquals("1*", MaskPatternsAdditional.maskTextField("12"));
-        assertEquals("1**", MaskPatternsAdditional.maskTextField("123"));
-        assertEquals("1***", MaskPatternsAdditional.maskTextField("1234"));
-        assertEquals("1***5", MaskPatternsAdditional.maskTextField("12345"));
-        assertEquals("1****6", MaskPatternsAdditional.maskTextField("123456"));
-        assertEquals("1*****7", MaskPatternsAdditional.maskTextField("1234567"));
-        assertEquals("1*****78", MaskPatternsAdditional.maskTextField("12345678"));
-        assertEquals("1******89", MaskPatternsAdditional.maskTextField("123456789"));
-        assertEquals("12******90", MaskPatternsAdditional.maskTextField("1234567890"));
-        assertEquals("12*******09", MaskPatternsAdditional.maskTextField("12345678909"));
-        assertEquals("12********98", MaskPatternsAdditional.maskTextField("123456789098"));
-        assertEquals("12********987", MaskPatternsAdditional.maskTextField("1234567890987"));
-        assertEquals("12*********876", MaskPatternsAdditional.maskTextField("12345678909876"));
-        assertEquals("12*********8765", MaskPatternsAdditional.maskTextField("123456789098765"));
-        assertEquals("123**********654", MaskPatternsAdditional.maskTextField("1234567890987654"));
-        assertEquals("123***********543", MaskPatternsAdditional.maskTextField("12345678909876543"));
-        assertEquals("123***********3234", MaskPatternsAdditional.maskTextField("123456789876543234"));
-        assertEquals("123************2123", MaskPatternsAdditional.maskTextField("1234567898765432123"));
-        assertEquals("1234************1238", MaskPatternsAdditional.maskTextField("12345678987654321238"));
-        assertEquals("1234*************2389", MaskPatternsAdditional.maskTextField("123456789876543212389"));
+        assertEquals("", MaskPatternsAlt.maskTextField(""));
+        assertEquals("*", MaskPatternsAlt.maskTextField("1"));
+        assertEquals("1*", MaskPatternsAlt.maskTextField("12"));
+        assertEquals("1**", MaskPatternsAlt.maskTextField("123"));
+        assertEquals("1***", MaskPatternsAlt.maskTextField("1234"));
+        assertEquals("1***5", MaskPatternsAlt.maskTextField("12345"));
+        assertEquals("1****6", MaskPatternsAlt.maskTextField("123456"));
+        assertEquals("1*****7", MaskPatternsAlt.maskTextField("1234567"));
+        assertEquals("1*****78", MaskPatternsAlt.maskTextField("12345678"));
+        assertEquals("1******89", MaskPatternsAlt.maskTextField("123456789"));
+        assertEquals("12******90", MaskPatternsAlt.maskTextField("1234567890"));
+        assertEquals("12*******09", MaskPatternsAlt.maskTextField("12345678909"));
+        assertEquals("12********98", MaskPatternsAlt.maskTextField("123456789098"));
+        assertEquals("12********987", MaskPatternsAlt.maskTextField("1234567890987"));
+        assertEquals("12*********876", MaskPatternsAlt.maskTextField("12345678909876"));
+        assertEquals("12*********8765", MaskPatternsAlt.maskTextField("123456789098765"));
+        assertEquals("123**********654", MaskPatternsAlt.maskTextField("1234567890987654"));
+        assertEquals("123***********543", MaskPatternsAlt.maskTextField("12345678909876543"));
+        assertEquals("123***********3234", MaskPatternsAlt.maskTextField("123456789876543234"));
+        assertEquals("123************2123", MaskPatternsAlt.maskTextField("1234567898765432123"));
+        assertEquals("1234************1238", MaskPatternsAlt.maskTextField("12345678987654321238"));
+        assertEquals("1234*************2389", MaskPatternsAlt.maskTextField("123456789876543212389"));
 
         assertEquals(
             "У попа была с****************************************, он ее убил.",
-            MaskPatternsAdditional.maskTextField("У попа была собака, он ее любил. Она съела кусок мяса, он ее убил.")
+            MaskPatternsAlt.maskTextField("У попа была собака, он ее любил. Она съела кусок мяса, он ее убил.")
         );
     }
 
     @Test
     void maskPassportSeriesAndNumberField_test() {
-        assertEquals("55*******33", MaskPatternsAdditional.maskPassportSeriesAndNumber("5563 456333"));
-        assertEquals("55*******33", MaskPatternsAdditional.maskPassportSeriesAndNumber("5563-456333"));
-        assertEquals("55*******33", MaskPatternsAdditional.maskPassportSeriesAndNumber("5563.456333"));
-        assertEquals("55*****333", MaskPatternsAdditional.maskPassportSeriesAndNumber("5563456333"));
-        assertEquals("", MaskPatternsAdditional.maskPassportSeriesAndNumber(""));
+        assertEquals("55*******33", MaskPatternsAlt.maskPassportSeriesAndNumber("5563 456333"));
+        assertEquals("55*******33", MaskPatternsAlt.maskPassportSeriesAndNumber("5563-456333"));
+        assertEquals("55*******33", MaskPatternsAlt.maskPassportSeriesAndNumber("5563.456333"));
+        assertEquals("55*****333", MaskPatternsAlt.maskPassportSeriesAndNumber("5563456333"));
+        assertEquals("", MaskPatternsAlt.maskPassportSeriesAndNumber(""));
     }
 }

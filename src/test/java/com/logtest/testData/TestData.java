@@ -8,6 +8,7 @@ import com.logtest.dto.DtoWithWrongIsMaskedField;
 import com.logtest.dto.DtoWithWrongPatternAndType;
 import com.logtest.dto.NoFieldsForMaskingDto;
 import com.logtest.dto.NoMaskedAnnotationDto;
+import com.logtest.dto.ObjectFieldDto;
 import com.logtest.dto.SimpleDtoForMasking;
 import com.logtest.dto.nestedDto.Account;
 import com.logtest.dto.nestedDto.IdDocument;
@@ -17,6 +18,7 @@ import com.logtest.dto.nestedDto.Person;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -308,6 +310,37 @@ public abstract class TestData {
     }
 
 
+    protected ObjectFieldDto createObjectFieldDto() {
+        return ObjectFieldDto.builder()
+            .isMasked(false)
+            .email(EMAIL)
+            .textField(TEXT)
+            .textFieldMap(new HashMap<>() {{
+                put("name", "Иван");
+                put("patronymic", "Иванович");
+                put("surname", "Иванов");
+            }})
+            .textFieldMapDto(new HashMap<>() {{
+                put("email", new ObjectFieldDto(false, EMAIL, null, null, null ));
+            }})
+            .build();
+    }
+
+    protected ObjectFieldDto createObjectFieldDtoMasked() {
+        return ObjectFieldDto.builder()
+            .isMasked(true)
+            .email(EMAIL_MASKED)
+            .textField(TEXT_MASKED)
+            .textFieldMap(new HashMap<>() {{
+                put("name", "Иван");
+                put("patronymic", "Иванович");
+                put("surname", "Иванов");
+            }})
+            .textFieldMapDto(new HashMap<>() {{
+                put("email", new ObjectFieldDto(true, EMAIL_MASKED, null, null, null ));
+            }})
+            .build();
+    }
 
 }
 

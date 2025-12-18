@@ -19,7 +19,7 @@ public class DtoWithQueue {
 
     private boolean isMasked;
 
-    @MaskedProperty(type = MaskPatternType.TEXT_FIELD)
+    @MaskedProperty(type = MaskPatternType.TEXT_FIELD_ALT)
     private String textField;
 
     private Queue<CollectionElement> dtos;

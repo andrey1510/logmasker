@@ -17,13 +17,13 @@ public class DtoWithWrongPatternAndType {
 
     private boolean isMasked;
 
-    @MaskedProperty(type = MaskPatternType.AUTH_DATA)
+    @MaskedProperty(type = MaskPatternType.AUTH_DATA_ALT)
     private String correctPatternAndType;
 
-    @MaskedProperty(type = MaskPatternType.EMAIL)
+    @MaskedProperty(type = MaskPatternType.EMAIL_ALT)
     private String wrongPattern;
 
-    @MaskedProperty(type = MaskPatternType.AUTH_DATA)
+    @MaskedProperty(type = MaskPatternType.AUTH_DATA_ALT)
     private Integer wrongType;
 
     private DtoWithWrongPatternAndType nestedDto;

@@ -17,7 +17,7 @@ public class DtoWithArray {
 
     private boolean isMasked;
 
-    @MaskedProperty(type = MaskPatternType.TEXT_FIELD)
+    @MaskedProperty(type = MaskPatternType.TEXT_FIELD_ALT)
     private String textField;
 
     private CollectionElement[] dtos;

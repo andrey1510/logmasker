@@ -17,6 +17,6 @@ public class CollectionElement {
 
     private boolean isMasked;
 
-    @MaskedProperty(type = MaskPatternType.TEXT_FIELD)
+    @MaskedProperty(type = MaskPatternType.TEXT_FIELD_ALT)
     private String phoneNumber;
 }
