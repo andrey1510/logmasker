@@ -316,9 +316,9 @@ public abstract class TestData {
             .email(EMAIL)
             .textField(TEXT)
             .textFieldMap(new HashMap<>() {{
-                put("name", "Иван");
-                put("patronymic", "Иванович");
-                put("surname", "Иванов");
+                put("name", "И***");
+                put("patronymic", "И*****ич");
+                put("surname", "И****в");
             }})
             .textFieldMapDto(new HashMap<>() {{
                 put("email", new ObjectFieldDto(false, EMAIL, null, null, null ));

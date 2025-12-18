@@ -1,6 +1,6 @@
 package com.logtest.masker.annotations;
 
-import com.logtest.masker.utils.MaskPatternType;
+import com.logtest.masker.patterns.MaskPatternType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

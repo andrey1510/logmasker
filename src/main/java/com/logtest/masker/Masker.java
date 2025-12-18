@@ -2,21 +2,25 @@ package com.logtest.masker;
 
 import com.logtest.masker.annotations.Masked;
 import com.logtest.masker.annotations.MaskedProperty;
-import com.logtest.masker.utils.CollectionProcessor;
-import com.logtest.masker.utils.MaskPatternType;
-import com.logtest.masker.utils.MaskPatterns;
-import com.logtest.masker.utils.MaskPatternsAlt;
+import com.logtest.masker.utils.NestedDtoCollectionProcessor;
+import com.logtest.masker.patterns.MaskPatternType;
+import com.logtest.masker.patterns.MaskPatterns;
+import com.logtest.masker.patterns.MaskPatternsAlt;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -25,7 +29,7 @@ public class Masker {
     private static final String ISMASKED_FIELD_NAME = "isMasked";
 
     static {
-        CollectionProcessor.setMaskFunction(Masker::processRecursively);
+        NestedDtoCollectionProcessor.setMaskFunction(Masker::processRecursively);
     }
 
     public static <T> T mask(T dto) {
@@ -67,13 +71,12 @@ public class Masker {
     }
 
     private static void copyAndMaskFields(Object source, Object target, Map<Object, Object> processed) {
-        org.springframework.util.ReflectionUtils.doWithFields(
+        ReflectionUtils.doWithFields(
             source.getClass(),
             field -> {
-                org.springframework.util.ReflectionUtils.makeAccessible(field);
-                Object value = org.springframework.util.ReflectionUtils.getField(field, source);
-                Object maskedValue = processFieldValue(field, value, processed);
-                org.springframework.util.ReflectionUtils.setField(field, target, maskedValue);
+                ReflectionUtils.makeAccessible(field);
+                Object maskedValue = processFieldValue(field, ReflectionUtils.getField(field, source), processed);
+                ReflectionUtils.setField(field, target, maskedValue);
             },
             field -> !field.isSynthetic()
         );
@@ -89,21 +92,21 @@ public class Masker {
         } else if (value instanceof Temporal && maskedProperty != null) {
             return processTemporalValue(maskedProperty.type(), value);
         } else if (value instanceof List && maskedProperty != null) {
-            return processAnnotatedList((List<?>) value, maskedProperty.type(), processed);
+            return processAnnotatedList((List<?>) value, maskedProperty.type());
         } else if (value instanceof Set && maskedProperty != null ) {
-            return processAnnotatedSet((Set<?>) value, maskedProperty.type(), processed);
+            return processAnnotatedSet((Set<?>) value, maskedProperty.type());
         } else if (value instanceof Map && maskedProperty != null) {
-            return processAnnotatedMap((Map<?, ?>) value, maskedProperty.type(), processed);
+            return processAnnotatedMap((Map<?, ?>) value, maskedProperty.type());
         } else if (value.getClass().isArray() && maskedProperty != null) {
-            return processAnnotatedArray(value, maskedProperty.type(), processed);
+            return processAnnotatedArray(value, maskedProperty.type());
         } else if (value instanceof List) {
-            return CollectionProcessor.processList((List<?>) value, field, processed);
+            return NestedDtoCollectionProcessor.processList((List<?>) value, field, processed);
         } else if (value instanceof Set) {
-            return CollectionProcessor.processSet((Set<?>) value, field, processed);
+            return NestedDtoCollectionProcessor.processSet((Set<?>) value, field, processed);
         } else if (value instanceof Map) {
-            return CollectionProcessor.processMap((Map<?, ?>) value, field, processed);
+            return NestedDtoCollectionProcessor.processMap((Map<?, ?>) value, field, processed);
         } else if (value.getClass().isArray()) {
-            return CollectionProcessor.processArray(value, processed);
+            return NestedDtoCollectionProcessor.processArray(value, processed);
         } else if (value.getClass().isAnnotationPresent(Masked.class)) {
             return processRecursively(value, processed);
         } else {
@@ -142,84 +145,61 @@ public class Masker {
         };
     }
 
-    private static List<?> processAnnotatedList(List<?> collection, MaskPatternType type, Map<Object, Object> processed) {
-        try {
-            return collection.stream()
-                .map(item -> processAnnotatedCollectionElement(item, type, processed))
-                .toList();
-        } catch (Exception e) {
-            return List.copyOf(collection);
-        }
+    private static List<?> processAnnotatedList(List<?> collection, MaskPatternType type) {
+        return collection.stream()
+            .map(item -> processAnnotatedCollectionElement(item, type))
+            .toList();
     }
 
-    private static Set<?> processAnnotatedSet(Set<?> collection, MaskPatternType type, Map<Object, Object> processed) {
-        try {
-            return collection.stream()
-                .map(item -> processAnnotatedCollectionElement(item, type, processed))
-                .collect(java.util.stream.Collectors.toCollection(() ->
-                    java.util.Collections.newSetFromMap(new IdentityHashMap<>())));
-        } catch (Exception e) {
-            return Set.copyOf(collection);
-        }
+    private static Set<?> processAnnotatedSet(Set<?> collection, MaskPatternType type) {
+        return collection.stream()
+            .map(item -> processAnnotatedCollectionElement(item, type))
+            .collect(Collectors.toCollection(() -> Collections.newSetFromMap(new IdentityHashMap<>())));
     }
 
-    private static Map<?, ?> processAnnotatedMap(Map<?, ?> map, MaskPatternType type, Map<Object, Object> processed) {
-        try {
-            return map.entrySet().stream()
-                .collect(java.util.stream.Collectors.toMap(
-                    Map.Entry::getKey,
-                    entry -> processAnnotatedCollectionElement(entry.getValue(), type, processed),
-                    (existing, replacement) -> replacement,
-                    java.util.HashMap::new
-                ));
-        } catch (Exception e) {
-            return new java.util.HashMap<>(map);
-        }
+    private static Map<?, ?> processAnnotatedMap(Map<?, ?> map, MaskPatternType type) {
+        return map.entrySet().stream()
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> processAnnotatedCollectionElement(entry.getValue(), type),
+                (existing, replacement) -> replacement,
+                java.util.HashMap::new
+            ));
     }
 
-    private static Object processAnnotatedArray(Object array, MaskPatternType type, Map<Object, Object> processed) {
-        try {
-            int length = java.lang.reflect.Array.getLength(array);
-            Class<?> componentType = array.getClass().getComponentType();
-            Object newArray = java.lang.reflect.Array.newInstance(componentType, length);
+    private static Object processAnnotatedArray(Object array, MaskPatternType type) {
+        int length = Array.getLength(array);
+        Object newArray = Array.newInstance(array.getClass().getComponentType(), length);
 
-            for (int i = 0; i < length; i++) {
-                Object item = java.lang.reflect.Array.get(array, i);
-                Object processedItem = processAnnotatedCollectionElement(item, type, processed);
-                java.lang.reflect.Array.set(newArray, i, processedItem);
-            }
-
-            return newArray;
-        } catch (Exception e) {
-            int length = java.lang.reflect.Array.getLength(array);
-            Object copy = java.lang.reflect.Array.newInstance(array.getClass().getComponentType(), length);
-            System.arraycopy(array, 0, copy, 0, length);
-            return copy;
+        for (int i = 0; i < length; i++) {
+            Object item = Array.get(array, i);
+            Object processedItem = processAnnotatedCollectionElement(item, type);
+            Array.set(newArray, i, processedItem);
         }
+
+        return newArray;
     }
 
-    private static Object processAnnotatedCollectionElement(Object item, MaskPatternType type, Map<Object, Object> processed) {
+    private static Object processAnnotatedCollectionElement(Object item, MaskPatternType type) {
         if (item == null) {
             return null;
         } else if (item instanceof String stringValue) {
             return processStringValue(type, stringValue);
         } else if (item instanceof Temporal temporalValue) {
             return processTemporalValue(type, temporalValue);
-        } else if (item.getClass().isAnnotationPresent(Masked.class)) {
-            return processRecursively(item, processed);
         } else {
             return item;
         }
     }
 
     private static void setMaskedFlag(Object dto) {
-        Field field = org.springframework.util.ReflectionUtils.findField(dto.getClass(), ISMASKED_FIELD_NAME);
+        Field field = ReflectionUtils.findField(dto.getClass(), ISMASKED_FIELD_NAME);
         if (field == null) return;
 
         Class<?> fieldType = field.getType();
         if (fieldType != boolean.class && fieldType != Boolean.class) return;
 
-        org.springframework.util.ReflectionUtils.makeAccessible(field);
-        org.springframework.util.ReflectionUtils.setField(field, dto, true);
+        ReflectionUtils.makeAccessible(field);
+        ReflectionUtils.setField(field, dto, true);
     }
 }

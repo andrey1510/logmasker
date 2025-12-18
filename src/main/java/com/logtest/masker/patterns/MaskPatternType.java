@@ -1,4 +1,4 @@
-package com.logtest.masker.utils;
+package com.logtest.masker.patterns;
 
 public enum MaskPatternType {
     TEXT_FIELD_ALT,

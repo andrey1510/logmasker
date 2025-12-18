@@ -1,6 +1,6 @@
 package com.logtest;
 
-import com.logtest.masker.utils.MaskPatterns;
+import com.logtest.masker.patterns.MaskPatterns;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;

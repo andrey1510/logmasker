@@ -1,7 +1,7 @@
 package com.logtest;
 
-import com.logtest.masker.utils.MaskPatterns;
-import com.logtest.masker.utils.MaskPatternsAlt;
+import com.logtest.masker.patterns.MaskPatterns;
+import com.logtest.masker.patterns.MaskPatternsAlt;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

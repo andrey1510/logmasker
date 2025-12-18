@@ -2,7 +2,7 @@ package com.logtest.dto;
 
 import com.logtest.masker.annotations.Masked;
 import com.logtest.masker.annotations.MaskedProperty;
-import com.logtest.masker.utils.MaskPatternType;
+import com.logtest.masker.patterns.MaskPatternType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +26,5 @@ public class ObjectFieldDto {
     @MaskedProperty(type = MaskPatternType.TEXT_FIELD_ALT)
     private Object textFieldMap;
 
-    @MaskedProperty(type = MaskPatternType.TEXT_FIELD_ALT)
     private Object textFieldMapDto;
 }

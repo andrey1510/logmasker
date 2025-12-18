@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
-public class CollectionProcessor {
+public class NestedDtoCollectionProcessor {
 
     @Setter
     private static BiFunction<Object, Map<Object, Object>, Object> maskFunction;
