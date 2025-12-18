@@ -8,9 +8,34 @@ public class MaskPatterns {
     private static final String THREE_ASTERISKS = "***";
     private static final String SPACE = " ";
     private static final String HYPHEN = "-";
+    private static final String EMPTY_STRING = "";
 
+    /**
+     * Если на входе пустая строка, или строка из пробелов, то она вернется в неизменном виде.
+     * Если в строке имеются символы помимо пробелов, то метод вернет "***".
+     */
     public static String maskJwtTykApiKeyIpAddress(String source) {
-        return THREE_ASTERISKS;
+        String trimmed = source.trim();
+        return switch (trimmed.length()) {
+            case 0 -> source;
+            default -> THREE_ASTERISKS;
+        };
+    }
+
+    /**
+     * СНИЛС - уникальный номер из 11 чисел, где первые 9 чисел - это индивидуальный номер человека, а последние 2 - контрольное число, рассчитываемое на основе первых 9.
+     * Перед обработкой метод убирает пробелы из начала и конца строки. Если на входе пустая строка, или строка из пробелов, то она вернется в неизменном виде.
+     * Если количество символов в номере правильное (т.е. 11 цифр или 14 цифр и дефисов), то метод вернет номер в котором все, кроме первых 2 и последних 2 символов, будет заменено звездочками.
+     * Если количество символов в номере неправильное, то метод вернет "*****".
+     */
+    public static String maskSnils(String source) {
+        String trimmed = source.trim();
+        return switch (trimmed.length()) {
+            case 0 -> source;
+            case 11 -> maskInRange(trimmed, 2, 9);
+            case 14 -> maskInRange(trimmed, 2, 12);
+            default -> NONSTANDARD_VALUE_MASK_REPLACEMENT;
+        };
     }
 
     public static String maskName(String source) {
@@ -50,7 +75,7 @@ public class MaskPatterns {
 
     private static String maskSimpleNameCompound(String part) {
         return switch (part.length()) {
-            case 0 -> "";
+            case 0 -> EMPTY_STRING;
             case 1 -> String.format("%s%s", part, THREE_ASTERISKS);
             default -> String.format("%s%s", part.charAt(0), THREE_ASTERISKS);
         };
@@ -71,34 +96,38 @@ public class MaskPatterns {
     public static String maskInn(String source) {
         String trimmed = source.trim();
         return switch (trimmed.length()) {
+            case 0 -> source;
             case 10, 12 -> maskInRange(trimmed, 2, 7);
-            default -> source;
+            default -> NONSTANDARD_VALUE_MASK_REPLACEMENT;
         };
     }
 
     public static String maskKpp(String source) {
         String trimmed = source.trim();
         return switch (trimmed.length()) {
+            case 0 -> source;
             case 9 -> maskInRange(trimmed, 2, 8);
-            default -> source;
+            default -> NONSTANDARD_VALUE_MASK_REPLACEMENT;
         };
     }
 
     public static String maskOkpo(String source) {
         String trimmed = source.trim();
         return switch (trimmed.length()) {
+            case 0 -> source;
             case 8 -> maskInRange(trimmed, 2, 7);
             case 10 -> maskInRange(trimmed, 4, 9);
-            default -> source;
+            default -> NONSTANDARD_VALUE_MASK_REPLACEMENT;
         };
     }
 
     public static String maskOgrnUlOrOgrnIp(String source) {
         String trimmed = source.trim();
         return switch (trimmed.length()) {
+            case 0 -> source;
             case 13 -> maskInRange(trimmed, 2, 9);
             case 15 -> maskInRange(trimmed, 2, 11);
-            default -> source;
+            default -> NONSTANDARD_VALUE_MASK_REPLACEMENT;
         };
     }
 
@@ -107,6 +136,7 @@ public class MaskPatterns {
         int length = trimmed.length();
 
         return switch (length) {
+            case 0 -> source;
             case 5, 6, 7 -> maskInRange(trimmed, 1, length - 1);
             case 8, 9 -> maskInRange(trimmed, 1, length - 2);
             case 10, 11, 12 -> maskInRange(trimmed, 2, length - 2);

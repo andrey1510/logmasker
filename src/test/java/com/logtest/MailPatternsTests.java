@@ -141,4 +141,22 @@ public class MailPatternsTests {
         assertEquals("55*****333", MaskPatternsAlt.maskPassportSeriesAndNumber("5563456333"));
         assertEquals("", MaskPatternsAlt.maskPassportSeriesAndNumber(""));
     }
+
+    @Test
+    void maskSnils_test() {
+        assertEquals("12**********23", MaskPatterns.maskSnils("123-345-678 23"));
+        assertEquals("12*******23", MaskPatterns.maskSnils("12334567823"));
+        assertEquals("*****", MaskPatterns.maskSnils("1234567"));
+        assertEquals("   ", MaskPatterns.maskSnils("   "));
+        assertEquals("", MaskPatterns.maskSnils(""));
+    }
+
+    @Test
+    void maskJwtTykApiKeyIpAddress_test() {
+        assertEquals("***", MaskPatterns.maskJwtTykApiKeyIpAddress("66.249.64.110"));
+        assertEquals("***", MaskPatterns.maskJwtTykApiKeyIpAddress("I5F53UWYEkNvbLeViF1cesaxKYuzlcMkny3Tsk362GS"));
+        assertEquals("   ", MaskPatterns.maskJwtTykApiKeyIpAddress("   "));
+        assertEquals("", MaskPatterns.maskJwtTykApiKeyIpAddress(""));
+    }
+
 }

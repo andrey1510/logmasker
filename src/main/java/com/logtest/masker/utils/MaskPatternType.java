@@ -15,6 +15,7 @@ public enum MaskPatternType {
     KPP,
     OGRNUL_OR_OGRNIP,
     OKPO,
-    JWT_TYK_API_KEY_IP_ADDRESS, // new
+    JWT_TYK_API_KEY_IP_ADDRESS,
+    SNILS,
     PHONE //new
 }
