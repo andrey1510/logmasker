@@ -3,15 +3,10 @@ package com.logtest.masker;
 import com.logtest.masker.annotations.Masked;
 import com.logtest.masker.annotations.MaskedProperty;
 import com.logtest.masker.utils.NestedDtoCollectionProcessor;
-import com.logtest.masker.patterns.MaskPatternType;
-import com.logtest.masker.patterns.MaskPatterns;
-import com.logtest.masker.patterns.MaskPatternsAlt;
+import com.logtest.masker.utils.RegularTypesProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ReflectionUtils;
-
 import java.lang.reflect.Field;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -26,8 +21,8 @@ public class Masker {
 
     static {
         NestedDtoCollectionProcessor.setMaskFunction(Masker::processRecursively);
-        NestedDtoCollectionProcessor.setStringMaskFunction(Masker::processStringValue);
-        NestedDtoCollectionProcessor.setTemporalMaskFunction(Masker::processTemporalValue);
+        NestedDtoCollectionProcessor.setStringMaskFunction(RegularTypesProcessor::processStringValue);
+        NestedDtoCollectionProcessor.setTemporalMaskFunction(RegularTypesProcessor::processTemporalValue);
     }
 
     public static <T> T mask(T dto) {
@@ -85,9 +80,9 @@ public class Masker {
         if (value == null) {
             return null;
         } else if (value instanceof String && maskedProperty != null) {
-            return processStringValue(maskedProperty.type(), (String) value);
+            return RegularTypesProcessor.processStringValue(maskedProperty.type(), (String) value);
         } else if (value instanceof Temporal && maskedProperty != null) {
-            return processTemporalValue(maskedProperty.type(), value);
+            return RegularTypesProcessor.processTemporalValue(maskedProperty.type(), value);
         } else if (value instanceof List) {
             return NestedDtoCollectionProcessor.processList((List<?>) value, field, processed);
         } else if (value instanceof Set) {
@@ -101,37 +96,6 @@ public class Masker {
         } else {
             return value;
         }
-    }
-
-    public static Temporal processTemporalValue(MaskPatternType type, Object value) {
-        return switch (type) {
-            case LOCAL_DATE -> value instanceof LocalDate date ?
-                MaskPatternsAlt.maskLocalDate(date) : (Temporal) value;
-            case OFFSET_DATE_TIME -> value instanceof OffsetDateTime dateTime ?
-                MaskPatternsAlt.maskOffsetDateTime(dateTime) : (Temporal) value;
-            default -> (Temporal) value;
-        };
-    }
-
-    public static String processStringValue(MaskPatternType type, String value) {
-        return switch (type) {
-            case EMAIL -> MaskPatterns.maskEmail(value);
-            case INN -> MaskPatterns.maskInn(value);
-            case KPP -> MaskPatterns.maskKpp(value);
-            case OKPO -> MaskPatterns.maskOkpo(value);
-            case OGRNUL_OR_OGRNIP -> MaskPatterns.maskOgrnUlOrOgrnIp(value);
-            case TEXT_FIELD_ALT -> MaskPatternsAlt.maskTextField(value);
-            case FULL_NAME_ALT -> MaskPatternsAlt.maskFullName(value);
-            case FULL_ADDRESS_ALT -> MaskPatternsAlt.maskFullAddress(value);
-            case EMAIL_ALT -> MaskPatternsAlt.maskEmail(value);
-            case SURNAME_ALT -> MaskPatternsAlt.maskSurname(value);
-            case AUTH_DATA_ALT -> MaskPatternsAlt.maskAuthData(value);
-            case PASSPORT_SERIES_AND_NUMBER_ALT -> MaskPatternsAlt.maskPassportSeriesAndNumber(value);
-            case JWT_TYK_API_KEY_IP_ADDRESS -> MaskPatterns.maskJwtTykApiKeyIpAddress(value);
-            case SNILS -> MaskPatterns.maskSnils(value);
-            case PHONE -> MaskPatterns.maskPhoneNumber(value);
-            default -> value;
-        };
     }
 
     private static void setMaskedFlag(Object dto) {

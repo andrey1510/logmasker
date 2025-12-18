@@ -4,8 +4,6 @@ import com.logtest.masker.annotations.Masked;
 import com.logtest.masker.annotations.MaskedProperty;
 import com.logtest.masker.patterns.MaskPatternType;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -22,7 +20,6 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Slf4j
 public class NestedDtoCollectionProcessor {
 
     @Setter
