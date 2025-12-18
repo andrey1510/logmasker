@@ -2,8 +2,8 @@ package com.logtest.masker;
 
 import com.logtest.masker.annotations.Masked;
 import com.logtest.masker.annotations.MaskedProperty;
-import com.logtest.masker.utils.NestedDtoCollectionProcessor;
-import com.logtest.masker.utils.RegularTypesProcessor;
+import com.logtest.masker.processors.CollectionProcessor;
+import com.logtest.masker.processors.ValueProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ReflectionUtils;
 import java.lang.reflect.Field;
@@ -20,9 +20,9 @@ public class Masker {
     private static final String ISMASKED_FIELD_NAME = "isMasked";
 
     static {
-        NestedDtoCollectionProcessor.setMaskFunction(Masker::processRecursively);
-        NestedDtoCollectionProcessor.setStringMaskFunction(RegularTypesProcessor::processStringValue);
-        NestedDtoCollectionProcessor.setTemporalMaskFunction(RegularTypesProcessor::processTemporalValue);
+        CollectionProcessor.setMaskFunction(Masker::processRecursively);
+        CollectionProcessor.setStringMaskFunction(ValueProcessor::processStringValue);
+        CollectionProcessor.setTemporalMaskFunction(ValueProcessor::processTemporalValue);
     }
 
     public static <T> T mask(T dto) {
@@ -80,17 +80,17 @@ public class Masker {
         if (value == null) {
             return null;
         } else if (value instanceof String && maskedProperty != null) {
-            return RegularTypesProcessor.processStringValue(maskedProperty.type(), (String) value);
+            return ValueProcessor.processStringValue(maskedProperty.type(), (String) value);
         } else if (value instanceof Temporal && maskedProperty != null) {
-            return RegularTypesProcessor.processTemporalValue(maskedProperty.type(), value);
+            return ValueProcessor.processTemporalValue(maskedProperty.type(), value);
         } else if (value instanceof List) {
-            return NestedDtoCollectionProcessor.processList((List<?>) value, field, processed);
+            return CollectionProcessor.processList((List<?>) value, field, processed);
         } else if (value instanceof Set) {
-            return NestedDtoCollectionProcessor.processSet((Set<?>) value, field, processed);
+            return CollectionProcessor.processSet((Set<?>) value, field, processed);
         } else if (value instanceof Map) {
-            return NestedDtoCollectionProcessor.processMap((Map<?, ?>) value, field, processed);
+            return CollectionProcessor.processMap((Map<?, ?>) value, field, processed);
         } else if (value.getClass().isArray()) {
-            return NestedDtoCollectionProcessor.processArray(value, field, processed);
+            return CollectionProcessor.processArray(value, field, processed);
         } else if (value.getClass().isAnnotationPresent(Masked.class)) {
             return processRecursively(value, processed);
         } else {

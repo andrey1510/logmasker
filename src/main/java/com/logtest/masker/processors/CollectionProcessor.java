@@ -1,4 +1,4 @@
-package com.logtest.masker.utils;
+package com.logtest.masker.processors;
 
 import com.logtest.masker.annotations.Masked;
 import com.logtest.masker.annotations.MaskedProperty;
@@ -20,7 +20,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class NestedDtoCollectionProcessor {
+public class CollectionProcessor {
 
     @Setter
     private static BiFunction<Object, Map<Object, Object>, Object> maskFunction;

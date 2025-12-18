@@ -1,4 +1,4 @@
-package com.logtest.masker.utils;
+package com.logtest.masker.processors;
 
 import com.logtest.masker.patterns.MaskPatternType;
 import com.logtest.masker.patterns.MaskPatterns;
@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.temporal.Temporal;
 
-public class RegularTypesProcessor {
+public class ValueProcessor {
 
     public static Temporal processTemporalValue(MaskPatternType type, Object value) {
         return switch (type) {
