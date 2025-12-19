@@ -7,6 +7,7 @@ import lombok.Setter;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -157,10 +158,12 @@ public class CollectionProcessor {
     }
 
     private static Class<?> findElementType(Field field, int index) {
-        return field.getGenericType() instanceof ParameterizedType paramType
-            && paramType.getActualTypeArguments().length > index
-            && paramType.getActualTypeArguments()[index] instanceof Class<?> clazz
-            ? clazz
-            : null;
+        if (!(field.getGenericType() instanceof ParameterizedType paramType)) return null;
+
+        Type[] typeArgs = paramType.getActualTypeArguments();
+        if (typeArgs.length <= index) return null;
+
+        Type type = typeArgs[index];
+        return type instanceof Class ? (Class<?>) type : null;
     }
 }

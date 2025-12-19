@@ -1,14 +1,8 @@
 package com.logtest.masker.patterns;
 
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.regex.Pattern;
 
 public class MaskPatternsAlt {
-
-    private static final LocalDate LOCALDATE_REPLACEMENT = LocalDate.of(0, 1, 1);
-    private static final OffsetDateTime OFFSETDATETIME_REPLACEMENT = OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC);
 
     private static final String ASTERISK = "*";
     private static final String TWO_ASTERISKS = "**";
@@ -57,14 +51,6 @@ public class MaskPatternsAlt {
     public static String maskAuthData(String source) {
         return AUTH_DATA_PATTERN.matcher(source.trim())
             .replaceAll(THREE_ASTERISKS);
-    }
-
-    public static LocalDate maskLocalDate(LocalDate date) {
-        return LOCALDATE_REPLACEMENT;
-    }
-
-    public static OffsetDateTime maskOffsetDateTime(OffsetDateTime dateTime) {
-        return OFFSETDATETIME_REPLACEMENT;
     }
 
     public static String maskPassportSeriesAndNumber(String source) {
