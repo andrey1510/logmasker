@@ -3,6 +3,9 @@ package com.logtest.masker.patterns;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MaskPatterns {
 
@@ -37,30 +40,159 @@ public class MaskPatterns {
      *  5) если в обработанной строке больше 16 символов, то 60% символов, начиная с символа определяемого по формуле (length - charactersToMask)/2, заменятся на "*****";
      * Метод не валидирует символы и считает разделители (пробелы, дефисы и т.д.) обычными символами для замены.
      */
+//    public static String maskTextField(String source) {
+//        String trimmed = source.trim();
+//        int length = trimmed.length();
+//
+//        int charactersToMask = (int) Math.ceil(length * 0.6);
+//
+//        return switch (length) {
+//            case 0 -> source;
+//            case 1 -> FIVE_ASTERISKS;
+//            case 2, 3, 4 -> String.format("%s%s", trimmed.charAt(0), FIVE_ASTERISKS);
+//            case 5, 6, 7, 8, 9 -> String.format("%s%s%s",
+//                trimmed.charAt(0),
+//                FIVE_ASTERISKS,
+//                trimmed.substring(1 + charactersToMask));
+//            case 10, 11, 12, 13, 14, 15 -> String.format("%s%s%s",
+//                trimmed.substring(0, 2),
+//                FIVE_ASTERISKS,
+//                trimmed.substring(2 + charactersToMask));
+//            default -> String.format("%s%s%s",
+//                trimmed.substring(0, (length - charactersToMask) / 2),
+//                FIVE_ASTERISKS,
+//                trimmed.substring((length - charactersToMask) / 2 + charactersToMask));
+//        };
+//    };
+
+
+
+    private static final String FIVE_ASTERISK = "*****";
+    private static final String FOUR_ASTERISK = "****";
+    private static final String THREE_ASTERISK = "***";
+    private static final String TWO_ASTERISK = "**";
+    private static final String GROUP_FORMAT_FIRST = "$1";
+    private static final String GROUP_FORMAT_THIRD = "$3";
+    private static final String GROUP_FORMAT_FOURTH = "$4";
+    private static final String GROUP_FORMAT_SIX = "$6";
+
+    /**
+     * Константы для маскирования текстовых полей.
+     */
+    private static final String TEXT_FIELD_PATTERN = "^(.{0,%d})(.{0,%d})(.*)";
+    private static final int TEXT_THRESHOLD_FIRST = 10;
+    private static final int TEXT_PREFIX_LENGTH_FIRST = 1;
+    private static final int TEXT_THRESHOLD_SECOND = 16;
+    private static final int TEXT_PREFIX_LENGTH_SECOND = 2;
+
+    /**
+     * Константы для маскирования персональных данных.
+     */
+    private static final String NAME_PATTERN = "(.)(.*)(.{%d})";
+    private static final String NAME_PATTERN_SHORT_WORD = ".";
+    private static final int NAME_THRESHOLD_FIRST = 5;
+    private static final int NAME_THRESHOLD_SECOND = 7;
+    private static final int NAME_SUFFIX_LENGTH_FIRST = 0;
+    private static final int NAME_SUFFIX_LENGTH_SECOND = 2;
+
+    /**
+     * Константы для маскирования email и номера телефона.
+     */
+    private static final String EMAIL_PATTERN = "([a-zA-Z])(.*)(@)([a-zA-Z])(.*)(\\..*)";
+    private static final String PHONE_NUMBER_PATTERN = "^(.{%d})(.*)(.{%d})";
+    private static final int PHONE_THRESHOLD_FIRST = 5;
+    private static final int PHONE_THRESHOLD_SECOND = 8;
+    private static final int PHONE_THRESHOLD_THIRD = 10;
+    private static final int PHONE_THRESHOLD_FOURTH = 13;
+    private static final int PHONE_THRESHOLD_FIFTH = 15;
+    private static final int PHONE_SUFFIX_LENGTH_FIRST = 1;
+    private static final int PHONE_SUFFIX_LENGTH_SECOND = 2;
+    private static final int PHONE_SUFFIX_LENGTH_THIRD = 3;
+    private static final int PHONE_PREFIX_LENGTH_FIRST = 1;
+    private static final int PHONE_PREFIX_LENGTH_SECOND = 2;
+
+    /**
+     * Константы для маскирования сведений, составляющих банковскую тайну.
+     */
+    private static final String CONFIDENTIAL_PATTERN = "(.*)(.{6})(.{4})$";
+    private static final String CONFIDENTIAL_PATTERN_FORMAT = "$1******$3";
+    private static final String PAN_PATTERN = "^(.{6})(.*)(.{4})$";
+    private static final String PAN_PATTERN_FORMAT = "$1******$3";
+
+    /**
+     * Константы для маскирования сведений ДУЛ.
+     */
+    private static final String DUL_PATTERN = "^(.{2})(.*)(.{3})$";
+    private static final String DUL_PATTERN_FORMAT = "$1*****$3";
+
+    /**
+     * Если на входе строка, состоящая из одного символа, то исходная строка заменяется символами "*****".
+     * Пример: "1" -> "*****"
+     *
+     * <p>Если строка, состоит от 2 до 4 символов, то символы исходной строки, начиная со второго, заменяются символами "*****".
+     * Пример: "12" -> "1*****"
+     *
+     * <p>Если строка, состоит от 5 до 9 символов, то 60% символов исходной строки, начиная со второго, заменяются символами "*****".
+     * Пример: "123456789" -> "1*****89"
+     *
+     * <p>Если строка, состоит от 10 до 15 символов, то 60% символов исходной строки, начиная с третьего, заменяются символами "*****".
+     * Пример: "1234567890" -> "12*****90"
+     *
+     * <p>Если строка, состоит из более чем 16 символов, то 60% символов исходной строки заменяются символами "*****".
+     * Начальный индекс, с которого начинается маскирование определяется по формуле: (length - charactersToMask) / 2.
+     * Где length - общее количество символов, charactersToMask - количество символов маскированных.
+     * Пример: "1234567890987654" -> "123*****654" и "1234567898765432123" -> "123*****2123"
+     *
+     * <p>Число символов для маскирования округляется в большую сторону.
+     *
+     * @param source Исходное строковое значение.
+     * @return Маскированное значение.
+     */
     public static String maskTextField(String source) {
-        String trimmed = source.trim();
-        int length = trimmed.length();
+        return Optional.ofNullable(source)
+            .map(s -> {
+                int length = s.length();
+                int charactersToMask = (int) Math.ceil(length * 0.6);
+                if (length == 1) {
+                    return FIVE_ASTERISK;
+                } else if (length < TEXT_THRESHOLD_FIRST) {
+                    Pattern pattern = Pattern.compile(String.format(TEXT_FIELD_PATTERN, TEXT_PREFIX_LENGTH_FIRST, charactersToMask));
+                    Matcher matcher = pattern.matcher(s);
+                    return getStringForTextMatcher(matcher, FIVE_ASTERISK);
+                } else if (length < TEXT_THRESHOLD_SECOND) {
+                    Pattern pattern = Pattern.compile(String.format(TEXT_FIELD_PATTERN, TEXT_PREFIX_LENGTH_SECOND, charactersToMask));
+                    Matcher matcher = pattern.matcher(s);
+                    return getStringForTextMatcher(matcher, FIVE_ASTERISK);
+                } else {
+                    int prefixLength = (length - charactersToMask) / 2;
+                    Pattern pattern = Pattern.compile(String.format(TEXT_FIELD_PATTERN, prefixLength, charactersToMask));
+                    Matcher matcher = pattern.matcher(s);
+                    return getStringForTextMatcher(matcher, FIVE_ASTERISK);
+                }
+            })
+            .orElse(null);
+    }
 
-        int charactersToMask = (int) Math.ceil(length * 0.6);
+    private static String getStringForTextMatcher(Matcher matcher, String asterisk) {
+        if (matcher.find()) {
+            String prefix = matcher.group(1);
+            String middle = asterisk;
+            String suffix = matcher.group(3);
+            return prefix + middle + suffix;
+        } else {
+            return asterisk;
+        }
+    }
 
-        return switch (length) {
-            case 0 -> source;
-            case 1 -> FIVE_ASTERISKS;
-            case 2, 3, 4 -> String.format("%s%s", trimmed.charAt(0), FIVE_ASTERISKS);
-            case 5, 6, 7, 8, 9 -> String.format("%s%s%s",
-                trimmed.charAt(0),
-                FIVE_ASTERISKS,
-                trimmed.substring(1 + charactersToMask));
-            case 10, 11, 12, 13, 14, 15 -> String.format("%s%s%s",
-                trimmed.substring(0, 2),
-                FIVE_ASTERISKS,
-                trimmed.substring(2 + charactersToMask));
-            default -> String.format("%s%s%s",
-                trimmed.substring(0, (length - charactersToMask) / 2),
-                FIVE_ASTERISKS,
-                trimmed.substring((length - charactersToMask) / 2 + charactersToMask));
-        };
-    };
+
+
+
+
+
+
+
+
+
 
     /**
      * Перед началом маскировки метод обрабатывает строку, убирая пробелы из начала и конца строки. Если на входе пустая строка, или строка из пробелов, то она вернется в неизменном виде.

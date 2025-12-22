@@ -362,4 +362,18 @@ public class MailPatternsTests {
         assertEquals("123*****6789", MaskPatterns.maskTextField("1234567890123456789"));
     }
 
+    @Test
+    void maskLongText_test() {
+
+
+        assertEquals("123*****6789", MaskPatterns.maskTextField("Вася Пупкин, паспорт 7212 347212, написал очень очень очень  очень очень очень  очень очень очень  очень очень очень  очень очень очень  очень очень очень очень  очень очень  очень очень очень длинный текст."));
+
+    }
+
+
+
+
+
+
+
 }

@@ -17,7 +17,7 @@ import java.util.Set;
 @Slf4j
 public class Masker {
 
-    private static final String ISMASKED_FIELD_NAME = "isMasked";
+    private static final String IS_MASKED_FIELD = "isMasked";
 
     static {
         CollectionProcessor.setMaskFunction(Masker::processRecursively);
@@ -99,7 +99,7 @@ public class Masker {
     }
 
     private static void setMaskedFlag(Object dto) {
-        Field field = ReflectionUtils.findField(dto.getClass(), ISMASKED_FIELD_NAME);
+        Field field = ReflectionUtils.findField(dto.getClass(), IS_MASKED_FIELD);
         if (field == null) return;
 
         Class<?> fieldType = field.getType();
