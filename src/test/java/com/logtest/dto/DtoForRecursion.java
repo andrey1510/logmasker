@@ -17,8 +17,8 @@ public class DtoForRecursion {
 
     private boolean isMasked;
 
-    @MaskedProperty(type = MaskPatternType.AUTH_DATA_ALT)
-    private String pin;
+    @MaskedProperty(type = MaskPatternType.TEXT_FIELD)
+    private String text;
 
     private DtoForRecursion dto;
 

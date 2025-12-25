@@ -17,6 +17,6 @@ public class SimpleDtoForMasking {
 
     private boolean isMasked;
 
-    @MaskedProperty(type = MaskPatternType.TEXT_FIELD_ALT)
+    @MaskedProperty(type = MaskPatternType.TEXT_FIELD)
     private String phoneNumber;
 }

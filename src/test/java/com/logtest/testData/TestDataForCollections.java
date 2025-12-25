@@ -26,11 +26,11 @@ import java.util.TreeMap;
 public abstract class TestDataForCollections {
 
     private static final String TEXT = "some random text";
-    private static final String TEXT_MASKED = "som**********ext";
+    private static final String TEXT_MASKED = "som*****ext";
     private static final String PHONE_1 = "79058453312";
-    private static final String PHONE_1_MASKED = "79*******12";
+    private static final String PHONE_1_MASKED = "79*****12";
     private static final String PHONE_2 = "89058453318";
-    private static final String PHONE_2_MASKED = "89*******18";
+    private static final String PHONE_2_MASKED = "89*****18";
     private static final String PHONE_3 = "89058003318";
 
     protected CollectionDtoElement createCollectionElement1() {

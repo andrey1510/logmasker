@@ -19,7 +19,7 @@ public class IdDocument {
 
     private boolean isMasked;
 
-    @MaskedProperty(type = MaskPatternType.AUTH_DATA_ALT)
+    @MaskedProperty(type = MaskPatternType.TEXT_FIELD)
     private String dulNumber;
 
     @MaskedProperty(type = MaskPatternType.LOCAL_DATE)

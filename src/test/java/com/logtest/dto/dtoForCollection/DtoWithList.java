@@ -19,7 +19,7 @@ public class DtoWithList {
 
     private boolean isMasked;
 
-    @MaskedProperty(type = MaskPatternType.TEXT_FIELD_ALT)
+    @MaskedProperty(type = MaskPatternType.TEXT_FIELD)
     private String textField;
 
     private List<CollectionDtoElement> dtos;

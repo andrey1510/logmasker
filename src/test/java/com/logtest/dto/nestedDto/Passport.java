@@ -19,7 +19,7 @@ public class Passport {
 
     private boolean isMasked;
 
-    @MaskedProperty(type = MaskPatternType.PASSPORT_SERIES_AND_NUMBER_ALT)
+    @MaskedProperty(type = MaskPatternType.TEXT_FIELD)
     private String passportSeriesAndNumber;
 
     @MaskedProperty(type = MaskPatternType.LOCAL_DATE)

@@ -24,11 +24,9 @@ import java.util.stream.IntStream;
 public class CollectionProcessor {
 
     @Setter
-    private static BiFunction<Object, Map<Object, Object>, Object> maskFunction;
+    private static BiFunction<Object, Map<Object, Object>, Object> collectionMaskFunction;
     @Setter
-    private static BiFunction<MaskPatternType, String, String> stringMaskFunction;
-    @Setter
-    private static BiFunction<MaskPatternType, Temporal, Temporal> temporalMaskFunction;
+    private static BiFunction<MaskPatternType, Object, Object> valueMaskFunction;
 
     public static List<?> processList(List<?> list, Field field, Map<Object, Object> processed) {
         MaskedProperty maskedProperty = field.getAnnotation(MaskedProperty.class);
@@ -99,7 +97,7 @@ public class CollectionProcessor {
             .forEach(i -> {
                 Object item = Array.get(array, i);
                 Object processedItem = (item != null && componentType.isAnnotationPresent(Masked.class))
-                    ? maskFunction.apply(item, processed)
+                    ? collectionMaskFunction.apply(item, processed)
                     : item;
                 Array.set(newArray, i, processedItem);
             });
@@ -123,10 +121,8 @@ public class CollectionProcessor {
     private static Object processAnnotatedCollectionElement(Object item, MaskPatternType type) {
         if (item == null) {
             return null;
-        } else if (item instanceof String stringValue) {
-            return stringMaskFunction != null ? stringMaskFunction.apply(type, stringValue) : item;
-        } else if (item instanceof Temporal temporalValue) {
-            return temporalMaskFunction != null ? temporalMaskFunction.apply(type, temporalValue) : item;
+        } else if (item instanceof String || item instanceof Temporal) {
+            return valueMaskFunction != null ? valueMaskFunction.apply(type, item) : item;
         } else {
             return item;
         }
@@ -137,14 +133,14 @@ public class CollectionProcessor {
             .filter(i -> Optional.ofNullable(findElementType(field, 0))
                 .map(type -> type.isAnnotationPresent(Masked.class))
                 .orElseGet(() -> i.getClass().isAnnotationPresent(Masked.class)))
-            .map(i -> maskFunction.apply(i, processed))
+            .map(i -> collectionMaskFunction.apply(i, processed))
             .orElse(item);
     }
 
     private static Object processMapKey(Object key, Map<Object, Object> processed) {
         return Optional.ofNullable(key)
             .filter(k -> k.getClass().isAnnotationPresent(Masked.class))
-            .map(k -> maskFunction.apply(k, processed))
+            .map(k -> collectionMaskFunction.apply(k, processed))
             .orElse(key);
     }
 
@@ -153,7 +149,7 @@ public class CollectionProcessor {
             .filter(v -> Optional.ofNullable(findElementType(field, 1))
                 .map(type -> type.isAnnotationPresent(Masked.class))
                 .orElseGet(() -> v.getClass().isAnnotationPresent(Masked.class)))
-            .map(v -> maskFunction.apply(v, processed))
+            .map(v -> collectionMaskFunction.apply(v, processed))
             .orElse(value);
     }
 

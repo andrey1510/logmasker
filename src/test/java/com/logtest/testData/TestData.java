@@ -25,24 +25,21 @@ import java.util.Map;
 public abstract class TestData {
 
     private static final String TEXT = "some random text";
-    private static final String TEXT_MASKED = "som**********ext";
+    private static final String TEXT_MASKED = "som*****ext";
     private static final String AUTH_1 = "1111";
     private static final String AUTH_2 = "222-22";
-    private static final String AUTH_MASKED = "***";
+    private static final String AUTH_1_MASKED = "1*****";
+    private static final String AUTH_2_MASKED = "2*****2";
     private static final String SURNAME_1 = "Петров";
-    private static final String SURNAME_1_MASKED = "П***";
+    private static final String SURNAME_1_MASKED = "П*****в";
     private static final String SURNAME_2 = "Сидоров";
-    private static final String SURNAME_2_MASKED = "С***";
+    private static final String SURNAME_2_MASKED = "С*****в";
     private static final String PASSPORT = "6002 66688";
-    private static final String PASSPORT_MASKED = "60******88";
+    private static final String PASSPORT_MASKED = "60*****88";
     private static final String PHONE = "79058453312";
-    private static final String PHONE_MASKED = "79*******12";
-    private static final String ADDRESS = "Москва, ул. Лесная, д. 15";
-    private static final String ADDRESS_MASKED = "Москва, ул. Лес**********";
+    private static final String PHONE_MASKED = "79*****12";
     private static final String EMAIL = "testmail@mail.com";
-    private static final String EMAIL_MASKED = "********@mail.com";
-    private static final String FULL_NAME = "Иванов Иван Иванович";
-    private static final String FULL_NAME_MASKED = "И*** Иван Иванович";
+    private static final String EMAIL_MASKED = "t*******@m***.com";
     private static final String NOT_MASKED_TEXT = "not to be masked";
     private static final String INN = "642125911472";
     private static final String INN_MASKED = "64*****11472";
@@ -87,7 +84,7 @@ public abstract class TestData {
     protected IdDocument createIdDocument1Masked() {
         return IdDocument.builder()
             .isMasked(true)
-            .dulNumber(AUTH_MASKED)
+            .dulNumber(AUTH_1_MASKED)
             .someDate(LocalDate.of(0, 1, 1))
             .build();
     }
@@ -103,7 +100,7 @@ public abstract class TestData {
     protected IdDocument createIdDocument2Masked() {
         return IdDocument.builder()
             .isMasked(true)
-            .dulNumber(AUTH_MASKED)
+            .dulNumber(AUTH_2_MASKED)
             .someDate(LocalDate.of(0, 1, 1))
             .build();
     }
@@ -127,7 +124,6 @@ public abstract class TestData {
     protected Person createPerson() {
         return Person.builder()
             .isMasked(false)
-            .fullname(FULL_NAME)
             .email(EMAIL)
             .textField(TEXT)
             .passport(createPassport())
@@ -139,7 +135,6 @@ public abstract class TestData {
     protected Person createPersonMasked() {
         return Person.builder()
             .isMasked(true)
-            .fullname(FULL_NAME_MASKED)
             .email(EMAIL_MASKED)
             .textField(TEXT_MASKED)
             .passport(createPassportMasked())
@@ -151,13 +146,6 @@ public abstract class TestData {
     protected AllPatternDto createAllPatternDto(){
         return AllPatternDto.builder()
             .isMasked(false)
-            .surname(SURNAME_1)
-            .fullAddress(ADDRESS)
-            .email(EMAIL)
-            .fullname(FULL_NAME)
-            .pan(AUTH_2)
-            .passportSeries(PASSPORT)
-            .textField(TEXT)
             .inn(INN)
             .someDate(LocalDate.of(2001, 4, 3))
             .dateTime(OffsetDateTime.of(2023, 4, 4, 4, 4, 4, 4, ZoneOffset.UTC))
@@ -168,13 +156,6 @@ public abstract class TestData {
     protected AllPatternDto createAllPatternDtoMasked(){
         return AllPatternDto.builder()
             .isMasked(true)
-            .surname(SURNAME_1_MASKED)
-            .fullAddress(ADDRESS_MASKED)
-            .email(EMAIL_MASKED)
-            .fullname(FULL_NAME_MASKED)
-            .pan(AUTH_MASKED)
-            .passportSeries(PASSPORT_MASKED)
-            .textField(TEXT_MASKED)
             .inn(INN_MASKED)
             .someDate(LocalDate.of(0, 1, 1))
             .dateTime(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
@@ -190,7 +171,7 @@ public abstract class TestData {
         for (int i = levels; i >= 1; i--) {
             current = DtoForRecursion.builder()
                 .isMasked(false)
-                .pin(AUTH_1)
+                .text(AUTH_1)
                 .dto(current)
                 .build();
         }
@@ -228,7 +209,7 @@ public abstract class TestData {
     protected DtoWithWrongIsMaskedField createDtoWithWrongIsMaskedFieldMasked() {
         return DtoWithWrongIsMaskedField.builder()
             .isMasked("false")
-            .pin(AUTH_MASKED)
+            .pin(AUTH_1_MASKED)
             .build();
     }
 
@@ -240,7 +221,7 @@ public abstract class TestData {
 
     protected DtoWithNoIsMaskedField createDtoWithNoIsMaskedFieldMasked() {
         return DtoWithNoIsMaskedField.builder()
-            .pin(AUTH_MASKED)
+            .pin(AUTH_1_MASKED)
             .build();
     }
 
@@ -283,13 +264,13 @@ public abstract class TestData {
     protected DtoWithWrongPatternAndType createDtoWithWrongPatternAndTypeMasked() {
         return DtoWithWrongPatternAndType.builder()
             .isMasked(true)
-            .correctPatternAndType(AUTH_MASKED)
-            .wrongPattern(TEXT)
+            .correctPatternAndType(AUTH_1_MASKED)
+            .wrongPattern("*****")
             .wrongType(1234)
             .nestedDto(DtoWithWrongPatternAndType.builder()
                 .isMasked(true)
-                .correctPatternAndType(AUTH_MASKED)
-                .wrongPattern(TEXT)
+                .correctPatternAndType(AUTH_1_MASKED)
+                .wrongPattern("*****")
                 .wrongType(1234)
                 .build())
             .build();
@@ -332,9 +313,9 @@ public abstract class TestData {
             .email(EMAIL_MASKED)
             .textField(TEXT_MASKED)
             .textFieldMap(new HashMap<>() {{
-                put("name", "И***");
+                put("name", "И*****");
                 put("patronymic", "И*****ич");
-                put("surname", "И****в");
+                put("surname", "И*****в");
             }})
             .textFieldMapDto(new HashMap<>() {{
                 put("email", new ObjectFieldDto(true, EMAIL_MASKED, null, null, null ));

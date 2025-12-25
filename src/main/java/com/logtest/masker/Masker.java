@@ -20,9 +20,8 @@ public class Masker {
     private static final String IS_MASKED_FIELD = "isMasked";
 
     static {
-        CollectionProcessor.setMaskFunction(Masker::processRecursively);
-        CollectionProcessor.setStringMaskFunction(ValueProcessor::processStringValue);
-        CollectionProcessor.setTemporalMaskFunction(ValueProcessor::processTemporalValue);
+        CollectionProcessor.setCollectionMaskFunction(Masker::processRecursively);
+        CollectionProcessor.setValueMaskFunction(ValueProcessor::processValue);
     }
 
     public static <T> T mask(T dto) {
@@ -79,10 +78,8 @@ public class Masker {
 
         if (value == null) {
             return null;
-        } else if (value instanceof String && maskedProperty != null) {
-            return ValueProcessor.processStringValue(maskedProperty.type(), (String) value);
-        } else if (value instanceof Temporal && maskedProperty != null) {
-            return ValueProcessor.processTemporalValue(maskedProperty.type(), value);
+        } else if ((value instanceof Temporal || value instanceof String) && maskedProperty != null) {
+            return ValueProcessor.processValue(maskedProperty.type(), value);
         } else if (value instanceof List) {
             return CollectionProcessor.processList((List<?>) value, field, processed);
         } else if (value instanceof Set) {

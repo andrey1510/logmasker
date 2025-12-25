@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DtoWithNoIsMaskedField {
 
-    @MaskedProperty(type = MaskPatternType.AUTH_DATA_ALT)
+    @MaskedProperty(type = MaskPatternType.TEXT_FIELD)
     private String pin;
 
 }

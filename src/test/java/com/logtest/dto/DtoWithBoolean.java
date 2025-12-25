@@ -17,6 +17,6 @@ public class DtoWithBoolean {
 
     private Boolean isMasked;
 
-    @MaskedProperty(type = MaskPatternType.TEXT_FIELD_ALT)
+    @MaskedProperty(type = MaskPatternType.TEXT_FIELD)
     private String phoneNumber;
 }

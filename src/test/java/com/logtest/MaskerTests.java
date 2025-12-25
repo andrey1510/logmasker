@@ -41,7 +41,7 @@ public class MaskerTests extends TestData {
             .takeWhile(Objects::nonNull)
             .forEach(dto -> {
                 assertTrue(dto.isMasked());
-                assertNotEquals("1111", dto.getPin());
+                assertNotEquals("1111", dto.getText());
             });
     }
 

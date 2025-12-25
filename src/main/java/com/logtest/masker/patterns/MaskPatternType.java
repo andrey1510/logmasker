@@ -1,13 +1,10 @@
 package com.logtest.masker.patterns;
 
 public enum MaskPatternType {
-    AUTH_DATA_ALT,
     BALANCE,
     CONFIDENTIAL_NUMBER,
     EMAIL,
-    EMAIL_ALT,
-    FULL_NAME_ALT,
-    FULL_ADDRESS_ALT,
+    FULL_ADDRESS,
     INN,
     ISSUER_NAME,
     ISSUER_CODE,
@@ -23,12 +20,9 @@ public enum MaskPatternType {
     PASSPORT,
     PASSPORT_NUMBER,
     PASSPORT_SERIES,
-    PASSPORT_SERIES_AND_NUMBER_ALT,
     PAN,
     PIN,
     PHONE,
     SNILS,
-    SURNAME_ALT,
     TEXT_FIELD,
-    TEXT_FIELD_ALT,
 }

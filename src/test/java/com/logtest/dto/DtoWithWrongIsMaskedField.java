@@ -17,7 +17,7 @@ public class DtoWithWrongIsMaskedField {
 
     private String isMasked;
 
-    @MaskedProperty(type = MaskPatternType.AUTH_DATA_ALT)
+    @MaskedProperty(type = MaskPatternType.TEXT_FIELD)
     private String pin;
 
 }

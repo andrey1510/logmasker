@@ -17,7 +17,7 @@ public class Account {
 
     private boolean isMasked;
 
-    @MaskedProperty(type = MaskPatternType.SURNAME_ALT)
+    @MaskedProperty(type = MaskPatternType.TEXT_FIELD)
     private String surname;
 
 }

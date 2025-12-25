@@ -17,13 +17,13 @@ public class ObjectFieldDto {
 
     private boolean isMasked;
 
-    @MaskedProperty(type = MaskPatternType.EMAIL_ALT)
+    @MaskedProperty(type = MaskPatternType.EMAIL)
     private Object email;
 
-    @MaskedProperty(type = MaskPatternType.TEXT_FIELD_ALT)
+    @MaskedProperty(type = MaskPatternType.TEXT_FIELD)
     private Object textField;
 
-    @MaskedProperty(type = MaskPatternType.TEXT_FIELD_ALT)
+    @MaskedProperty(type = MaskPatternType.TEXT_FIELD)
     private Object textFieldMap;
 
     private Object textFieldMapDto;
