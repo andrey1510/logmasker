@@ -56,12 +56,18 @@ public class ValueProcessor {
     }
 
     public static Object processValue(MaskPatternType type, Object value) {
-        if (value instanceof String stringValue && STRING_MASKERS.containsKey(type)) {
-            return STRING_MASKERS.get(type).apply(stringValue);
-        } else if (value instanceof Temporal temporalValue && TEMPORAL_MASKERS.containsKey(type)) {
-            return TEMPORAL_MASKERS.get(type).apply(temporalValue);
+
+        if (value instanceof String str) {
+            Function<String, String> masker = STRING_MASKERS.get(type);
+            if (masker != null) return masker.apply(str);
+            return value;
+        } else if (value instanceof Temporal temp) {
+            Function<Temporal, Temporal> masker = TEMPORAL_MASKERS.get(type);
+            if (masker != null) return masker.apply(temp);
+            return value;
         } else {
             return value;
         }
     }
+
 }
