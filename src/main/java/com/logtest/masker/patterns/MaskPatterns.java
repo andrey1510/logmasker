@@ -295,8 +295,9 @@ public class MaskPatterns {
     private static String maskFirstName(String firstName) {
         if (firstName.contains(HYPHEN)) {
             return String.join(HYPHEN, maskCompoundParts(firstName.split(HYPHEN, -1)));
+        } else {
+            return maskSingleWord(firstName);
         }
-        return maskSingleWord(firstName);
     }
 
     private static String[] maskCompoundParts(String[] parts) {
@@ -437,12 +438,9 @@ public class MaskPatterns {
         if (dotIndex <= 0 || dotIndex == trimmed.substring(atIndex + 1).length() - 1)
             return NONSTANDARD_VALUE_MASK;
 
-        return String.format("%s%s%s%s",
-            maskSequence(trimmed.substring(0, atIndex)),
-            AT_SIGN,
-            maskSequence(trimmed.substring(atIndex + 1).substring(0, dotIndex)),
-            trimmed.substring(atIndex + 1).substring(dotIndex)
-        );
+        return maskSequence(trimmed.substring(0, atIndex)) + AT_SIGN +
+            maskSequence(trimmed.substring(atIndex + 1).substring(0, dotIndex)) +
+            trimmed.substring(atIndex + 1).substring(dotIndex);
     }
 
     private static String maskInRange(String str, int start, int end) {
