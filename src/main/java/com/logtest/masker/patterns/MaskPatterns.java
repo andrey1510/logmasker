@@ -60,24 +60,17 @@ public class MaskPatterns {
         String trimmed = source.trim();
         int length = trimmed.length();
 
-        int charactersToMask = (int) Math.ceil(length * 0.6);
+        int quantityToMask = (int) Math.ceil(length * 0.6);
 
         return switch (length) {
             case 0 -> source;
             case 1 -> FIVE_ASTERISKS;
-            case 2, 3, 4 -> String.format("%s%s", trimmed.charAt(0), FIVE_ASTERISKS);
-            case 5, 6, 7, 8, 9 -> String.format("%s%s%s",
-                trimmed.charAt(0),
-                FIVE_ASTERISKS,
-                trimmed.substring(1 + charactersToMask));
-            case 10, 11, 12, 13, 14, 15 -> String.format("%s%s%s",
-                trimmed.substring(0, 2),
-                FIVE_ASTERISKS,
-                trimmed.substring(2 + charactersToMask));
-            default -> String.format("%s%s%s",
-                trimmed.substring(0, (length - charactersToMask) / 2),
-                FIVE_ASTERISKS,
-                trimmed.substring((length - charactersToMask) / 2 + charactersToMask));
+            case 2, 3, 4 -> trimmed.charAt(0) + FIVE_ASTERISKS;
+            case 5, 6, 7, 8, 9 -> trimmed.charAt(0) + FIVE_ASTERISKS + trimmed.substring(1 + quantityToMask);
+            case 10, 11, 12, 13, 14, 15 -> trimmed.substring(0, 2) + FIVE_ASTERISKS
+                + trimmed.substring(2 + quantityToMask);
+            default -> trimmed.substring(0, (length - quantityToMask) / 2) + FIVE_ASTERISKS
+                + trimmed.substring((length - quantityToMask) / 2 + quantityToMask);
         };
     };
 
@@ -142,7 +135,7 @@ public class MaskPatterns {
         return switch (trimmed.length()) {
             case 0 -> source;
             case 1, 2 -> FOUR_ASTERISKS;
-            default -> String.format("%s%s", trimmed.substring(0, trimmed.length() - 2), TWO_ASTERISKS);
+            default -> trimmed.substring(0, trimmed.length() - 2) + TWO_ASTERISKS;
         };
     }
 
@@ -158,7 +151,7 @@ public class MaskPatterns {
         return switch (trimmed.length()) {
             case 0 -> source;
             case 1, 2, 3 -> THREE_ASTERISKS;
-            default -> String.format("%s%s", THREE_ASTERISKS, trimmed.substring(3));
+            default -> THREE_ASTERISKS + trimmed.substring(3);
         };
     }
 
@@ -189,7 +182,7 @@ public class MaskPatterns {
         return switch (trimmed.length()) {
             case 0 -> source;
             case 1, 2, 3 -> THREE_ASTERISKS;
-            default -> String.format("%s%s", trimmed.substring(0, trimmed.length() - 3), THREE_ASTERISKS);
+            default -> trimmed.substring(0, trimmed.length() - 3) + THREE_ASTERISKS;
         };
     }
 
@@ -204,10 +197,8 @@ public class MaskPatterns {
         return switch (trimmed.length()) {
             case 0 -> source;
             case 1, 2, 3, 4 -> FOUR_ASTERISKS;
-            default -> String.format("%s%s%s%s%s",
-                trimmed.substring(0, trimmed.length() / 4 - 1),
-                SPACE, FIVE_ASTERISKS, SPACE,
-                trimmed.substring(trimmed.length() / 4 * 3));
+            default -> trimmed.substring(0, trimmed.length() / 4 - 1) + SPACE + FIVE_ASTERISKS + SPACE
+                + trimmed.substring(trimmed.length() / 4 * 3);
         };
     }
 
@@ -219,7 +210,7 @@ public class MaskPatterns {
         String trimmed = source.trim();
         return switch (trimmed.length()) {
             case 0 -> source;
-            default -> String.format("%s%s", trimmed.charAt(0), THREE_ASTERISKS);
+            default -> trimmed.charAt(0) + THREE_ASTERISKS;
         };
     }
 
@@ -231,7 +222,7 @@ public class MaskPatterns {
         String trimmed = source.trim();
         return switch (trimmed.length()) {
             case 0 -> source;
-            default -> String.format("%s%s", FOUR_ASTERISKS, trimmed.charAt(trimmed.length() - 1));
+            default -> FOUR_ASTERISKS + trimmed.charAt(trimmed.length() - 1);
         };
     }
 
@@ -312,8 +303,8 @@ public class MaskPatterns {
         int length = word.length();
         return switch (length) {
             case 0, 1, 2, 3, 4 -> ASTERISK.repeat(length);
-            case 5, 6, 7 -> String.format("%s%s", word.charAt(0), ASTERISK.repeat(length - 1));
-            default -> String.format("%s%s%s", word.charAt(0), THREE_ASTERISKS, word.substring(length - 2));
+            case 5, 6, 7 -> word.charAt(0) + ASTERISK.repeat(length - 1);
+            default -> word.charAt(0) + THREE_ASTERISKS + word.substring(length - 2);
         };
     }
 
@@ -438,9 +429,9 @@ public class MaskPatterns {
         if (dotIndex <= 0 || dotIndex == trimmed.substring(atIndex + 1).length() - 1)
             return NONSTANDARD_VALUE_MASK;
 
-        return maskSequence(trimmed.substring(0, atIndex)) + AT_SIGN +
-            maskSequence(trimmed.substring(atIndex + 1).substring(0, dotIndex)) +
-            trimmed.substring(atIndex + 1).substring(dotIndex);
+        return maskSequence(trimmed.substring(0, atIndex)) + AT_SIGN
+            + maskSequence(trimmed.substring(atIndex + 1).substring(0, dotIndex))
+            + trimmed.substring(atIndex + 1).substring(dotIndex);
     }
 
     private static String maskInRange(String str, int start, int end) {
