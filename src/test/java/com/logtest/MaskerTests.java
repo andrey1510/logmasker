@@ -18,6 +18,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class MaskerTests extends TestData {
 
     @Test
+    void maskToString_test() {
+
+        assertEquals(createPersonMasked(), Masker.maskDtoToString(createPerson()));
+        assertEquals(createAllPatternDtoMasked(), Masker.maskDtoToString(createAllPatternDto()));
+
+    }
+
+
+    @Test
     void mask_testAllFields() {
         assertEquals(createAllPatternDtoMasked(), Masker.mask(createAllPatternDto()));
     }

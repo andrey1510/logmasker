@@ -2,12 +2,8 @@ package com.logtest.masker.patterns;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 
 public class MaskPatterns {
-
-    private static final LocalDate LOCALDATE_REPLACEMENT = LocalDate.of(0, 1, 1);
-    private static final OffsetDateTime OFFSETDATETIME_REPLACEMENT = OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC);
 
     private static final String NONSTANDARD_VALUE_MASK = "*****";
     private static final String ASTERISK = "*";
@@ -21,11 +17,11 @@ public class MaskPatterns {
     private static final String HYPHEN = "-";
 
     public static LocalDate maskLocalDate(LocalDate date) {
-        return LOCALDATE_REPLACEMENT;
+        return date.withYear(1);
     }
 
     public static OffsetDateTime maskOffsetDateTime(OffsetDateTime dateTime) {
-        return OFFSETDATETIME_REPLACEMENT;
+        return dateTime.withYear(1);
     }
     /**
      * Перед началом маскировки метод обрабатывает строку, убирая пробелы из начала и конца строки. Если на входе пустая строка, или строка из пробелов, то она вернется в неизменном виде.

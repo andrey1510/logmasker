@@ -3,13 +3,32 @@ package com.logtest;
 import com.logtest.masker.patterns.MaskPatterns;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MailPatternsTests {
 
     @Test
-    void maskInn_test() {
+    void maskLocalDate_test() {
+        assertEquals(LocalDate.of(1, 10, 10),
+            MaskPatterns.maskLocalDate(LocalDate.of(2022, 10, 10)));
+        assertEquals(LocalDate.of(1, 10, 10),
+            MaskPatterns.maskLocalDate(LocalDate.of(1, 10, 10)));
+    }
 
+    @Test
+    void maskOffsetDateTime_test() {
+        assertEquals(OffsetDateTime.of(1, 4, 4, 4, 4, 4, 4, ZoneOffset.UTC),
+            MaskPatterns.maskOffsetDateTime(OffsetDateTime.of(2023, 4, 4, 4, 4, 4, 4, ZoneOffset.UTC)));
+        assertEquals(OffsetDateTime.of(1, 4, 4, 4, 4, 4, 4, ZoneOffset.UTC),
+            MaskPatterns.maskOffsetDateTime(OffsetDateTime.of(2023, 4, 4, 4, 4, 4, 4, ZoneOffset.UTC)));
+    }
+
+    @Test
+    void maskInn_test() {
         assertEquals("64*****632", MaskPatterns.maskInn("6454093632"));
         assertEquals("64*****11472", MaskPatterns.maskInn("642125911472"));
         assertEquals("64*****632", MaskPatterns.maskInn(" 6454093632 "));
@@ -18,18 +37,15 @@ public class MailPatternsTests {
         assertEquals("*****", MaskPatterns.maskInn("6454011111111111111111111"));
         assertEquals("   ", MaskPatterns.maskInn("   "));
         assertEquals("", MaskPatterns.maskInn(""));
-
     }
 
     @Test
     void maskKpp_test() {
-
         assertEquals("64******3", MaskPatterns.maskKpp("645401003"));
         assertEquals("*****", MaskPatterns.maskKpp("64540"));
         assertEquals("*****", MaskPatterns.maskKpp("6454011111111111111111111"));
         assertEquals("   ", MaskPatterns.maskKpp("   "));
         assertEquals("", MaskPatterns.maskKpp(""));
-
     }
 
     @Test
@@ -40,7 +56,6 @@ public class MailPatternsTests {
         assertEquals("*****", MaskPatterns.maskOkpo("6454011111111111111111111"));
         assertEquals("   ", MaskPatterns.maskOkpo("   "));
         assertEquals("", MaskPatterns.maskOkpo(""));
-
     }
 
     @Test
@@ -51,7 +66,6 @@ public class MailPatternsTests {
         assertEquals("*****", MaskPatterns.maskOgrnUlOrOgrnIp("6454011111111111111111111"));
         assertEquals("   ", MaskPatterns.maskOgrnUlOrOgrnIp("   "));
         assertEquals("", MaskPatterns.maskOgrnUlOrOgrnIp(""));
-
     }
 
     @Test
@@ -287,9 +301,10 @@ public class MailPatternsTests {
 
     @Test
     void maskLongText_test() {
-
-        assertEquals("Вася Пупкин, паспорт 7212 347212, написал*****ь очень  очень очень очень длинный текст.", MaskPatterns.maskTextField("Вася Пупкин, паспорт 7212 347212, написал очень очень очень  очень очень очень  очень очень очень  очень очень очень  очень очень очень  очень очень очень очень  очень очень  очень очень очень длинный текст."));
-
+        assertEquals("Вася Пупкин, паспорт 7212 347212, написал*****ь очень  очень очень очень длинный текст.",
+            MaskPatterns.maskTextField("Вася Пупкин, паспорт 7212 347212, написал очень очень очень  очень " +
+                "очень очень  очень очень очень  очень очень очень  очень очень очень  очень очень очень очень  " +
+                "очень очень  очень очень очень длинный текст."));
     }
 
 

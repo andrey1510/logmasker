@@ -32,6 +32,10 @@ public abstract class TestDataForCollections {
     private static final String PHONE_2 = "89058453318";
     private static final String PHONE_2_MASKED = "89*****18";
     private static final String PHONE_3 = "89058003318";
+    private static final LocalDate DATE_1 = LocalDate.of(2021, 1, 2);
+    private static final LocalDate DATE_1_MASKED = LocalDate.of(1, 1, 2);
+    private static final LocalDate DATE_2 = LocalDate.of(2001, 4, 3);
+    private static final LocalDate DATE_2_MASKED = LocalDate.of(1, 4, 3);
 
     protected CollectionDtoElement createCollectionElement1() {
         return CollectionDtoElement.builder()
@@ -337,8 +341,8 @@ public abstract class TestDataForCollections {
             .inns(new LinkedList<>(List.of("6454093632", "642125911472")))
             .kpps(Set.of("645401003", "64540", "6454011111111111111111111"))
             .dates(Map.of(
-                "key1", LocalDate.of(2002, 10, 10),
-                "key2", LocalDate.of(2001, 4, 3)
+                "key1", DATE_1,
+                "key2", DATE_2
             ))
             .build();
     }
@@ -349,8 +353,8 @@ public abstract class TestDataForCollections {
             .inns(new LinkedList<>(List.of("64*****632", "64*****11472")))
             .kpps(Set.of("64******3", "*****"))
             .dates(Map.of(
-                "key1", LocalDate.of(0, 1, 1),
-                "key2", LocalDate.of(0, 1, 1)
+                "key1", DATE_1_MASKED,
+                "key2", DATE_2_MASKED
             ))
             .build();
     }

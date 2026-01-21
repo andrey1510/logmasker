@@ -43,7 +43,12 @@ public abstract class TestData {
     private static final String NOT_MASKED_TEXT = "not to be masked";
     private static final String INN = "642125911472";
     private static final String INN_MASKED = "64*****11472";
-
+    private static final LocalDate DATE_1 = LocalDate.of(2021, 1, 2);
+    private static final LocalDate DATE_1_MASKED = LocalDate.of(1, 1, 2);
+    private static final LocalDate DATE_2 = LocalDate.of(2001, 4, 3);
+    private static final LocalDate DATE_2_MASKED = LocalDate.of(1, 4, 3);
+    private static final OffsetDateTime DATE_TIME_1 = OffsetDateTime.of(2023, 4, 4, 4, 4, 4, 4, ZoneOffset.UTC);
+    private static final OffsetDateTime DATE_TIME_1_MASKED = OffsetDateTime.of(1, 4, 4, 4, 4, 4, 4, ZoneOffset.UTC);
 
     protected Account createAccount1() {
         return Account.builder()
@@ -77,7 +82,7 @@ public abstract class TestData {
         return IdDocument.builder()
             .isMasked(false)
             .dulNumber(AUTH_1)
-            .someDate(LocalDate.of(2021, 1, 2))
+            .someDate(DATE_1)
             .build();
     }
 
@@ -85,7 +90,7 @@ public abstract class TestData {
         return IdDocument.builder()
             .isMasked(true)
             .dulNumber(AUTH_1_MASKED)
-            .someDate(LocalDate.of(0, 1, 1))
+            .someDate(DATE_1_MASKED)
             .build();
     }
 
@@ -93,7 +98,7 @@ public abstract class TestData {
         return IdDocument.builder()
             .isMasked(false)
             .dulNumber(AUTH_2)
-            .someDate(LocalDate.of(2001, 4, 3))
+            .someDate(DATE_2)
             .build();
     }
 
@@ -101,7 +106,7 @@ public abstract class TestData {
         return IdDocument.builder()
             .isMasked(true)
             .dulNumber(AUTH_2_MASKED)
-            .someDate(LocalDate.of(0, 1, 1))
+            .someDate(DATE_2_MASKED)
             .build();
     }
 
@@ -109,7 +114,7 @@ public abstract class TestData {
         return Passport.builder()
             .isMasked(false)
             .passportSeriesAndNumber(PASSPORT)
-            .issuanceDate(LocalDate.of(2002, 10, 10))
+            .issuanceDate(DATE_1)
             .build();
     }
 
@@ -117,7 +122,7 @@ public abstract class TestData {
         return Passport.builder()
             .isMasked(true)
             .passportSeriesAndNumber(PASSPORT_MASKED)
-            .issuanceDate(LocalDate.of(0, 1, 1))
+            .issuanceDate(DATE_1_MASKED)
             .build();
     }
 
@@ -147,8 +152,8 @@ public abstract class TestData {
         return AllPatternDto.builder()
             .isMasked(false)
             .inn(INN)
-            .someDate(LocalDate.of(2001, 4, 3))
-            .dateTime(OffsetDateTime.of(2023, 4, 4, 4, 4, 4, 4, ZoneOffset.UTC))
+            .someDate(DATE_1)
+            .dateTime(DATE_TIME_1)
             .notForMaskingField(NOT_MASKED_TEXT)
             .build();
     }
@@ -157,8 +162,8 @@ public abstract class TestData {
         return AllPatternDto.builder()
             .isMasked(true)
             .inn(INN_MASKED)
-            .someDate(LocalDate.of(0, 1, 1))
-            .dateTime(OffsetDateTime.of(1, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
+            .someDate(DATE_1_MASKED)
+            .dateTime(DATE_TIME_1_MASKED)
             .notForMaskingField(NOT_MASKED_TEXT)
             .build();
     }

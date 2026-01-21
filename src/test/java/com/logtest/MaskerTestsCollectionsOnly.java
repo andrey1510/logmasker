@@ -1,12 +1,15 @@
 package com.logtest;
 
+import com.logtest.dto.dtoForCollection.DtoWithMap;
 import com.logtest.dto.dtoForCollection.DtoWithQueue;
 import com.logtest.masker.Masker;
 import com.logtest.testData.TestDataForCollections;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Slf4j
 public class MaskerTestsCollectionsOnly extends TestDataForCollections {
 
     @Test
@@ -52,6 +55,12 @@ public class MaskerTestsCollectionsOnly extends TestDataForCollections {
     @Test
     void mask_testHashMap() {
         assertEquals(createHashMapMasked(), Masker.mask(createHashMap()));
+
+        DtoWithMap mask = Masker.mask(createHashMap());
+        log.info(String.valueOf(mask));
+
+        System.out.println();
+
     }
 
     @Test
