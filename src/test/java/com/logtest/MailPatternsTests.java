@@ -307,5 +307,4 @@ public class MailPatternsTests {
                 "очень очень  очень очень очень длинный текст."));
     }
 
-
 }

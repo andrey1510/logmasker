@@ -11,13 +11,13 @@ public class MaskerTestsToString extends TestDataForToString {
 
     @Test
     void maskToString_test() {
-        assertEquals(createUpperLevelDto(), Masker.maskDtoToString(createUpperLevelDto()));
+        assertEquals(createUpperLevelDto(), Masker.maskToString(createUpperLevelDto()));
     }
 
     @Test
     void maskToString_testNoToStringOverride() {
         assertEquals(createUpperLevelDtoNoToStringOverride(),
-            Masker.maskDtoToString(createUpperLevelDtoNoToStringOverride()));
+            Masker.maskToStringWithOverride(createUpperLevelDtoNoToStringOverride()));
     }
 
 }

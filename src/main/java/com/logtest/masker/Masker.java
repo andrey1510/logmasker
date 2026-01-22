@@ -1,46 +1,21 @@
 package com.logtest.masker;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.logtest.masker.annotations.Masked;
 import com.logtest.masker.annotations.MaskedProperty;
 import com.logtest.masker.processors.CollectionProcessor;
 import com.logtest.masker.processors.ValueProcessor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.StandardToStringStyle;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.Temporal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
 
+import static com.logtest.masker.processors.DtoToStringProcessor.convertDtoToString;
+import static com.logtest.masker.processors.DtoToStringProcessor.maskDates;
 import static org.springframework.util.ReflectionUtils.doWithFields;
 import static org.springframework.util.ReflectionUtils.findField;
 import static org.springframework.util.ReflectionUtils.getField;
@@ -56,13 +31,13 @@ public class Masker {
         CollectionProcessor.setCollectionMaskFunction(Masker::processRecursively);
         CollectionProcessor.setValueMaskFunction(ValueProcessor::processValue);
     }
-    public static String maskDtoToString(Object dto) {
-        return replaceYearsWithAsterisks(String.valueOf(mask(dto)));
+
+    public static <T> String maskToString(T dto) {
+        return maskDates(String.valueOf(mask(dto)));
     }
 
-    private static String replaceYearsWithAsterisks(String toStringResult) {
-        Pattern pattern = Pattern.compile("(0000|0001)(-\\d{2}-\\d{2})");
-        return pattern.matcher(toStringResult).replaceAll("****$2");
+    public static <T> String maskToStringWithOverride(T dto) {
+        return maskDates(convertDtoToString(mask(dto)));
     }
 
     public static <T> T mask(T dto) {

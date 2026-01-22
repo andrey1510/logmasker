@@ -36,6 +36,19 @@ public abstract class TestDataForCollections {
     private static final LocalDate DATE_1_MASKED = LocalDate.of(0, 1, 2);
     private static final LocalDate DATE_2 = LocalDate.of(2001, 4, 3);
     private static final LocalDate DATE_2_MASKED = LocalDate.of(0, 4, 3);
+    private static final String INN_1 = "6454093632";
+    private static final String INN_1_MASKED = "64*****632";
+    private static final String INN_2 = "642125911472";
+    private static final String INN_2_MASKED = "64*****11472";
+    private static final String KPP_1 = "645401003";
+    private static final String KPP_1_MASKED = "64******3";
+    private static final String KPP_2 = "64540";
+    private static final String KPP_2_MASKED = "*****";
+    private static final String KPP_INCORRECT = "6454011111111111111111111";
+
+    protected static final String DTO_WITH_SET_MASKED = "DtoWithSet(isMasked=true, textField=som*****ext, " +
+        "dtos=[CollectionDtoElement(isMasked=true, phoneNumber=89*****18), CollectionDtoElement(isMasked=true, " +
+        "phoneNumber=89*****18)])";
 
     protected CollectionDtoElement createCollectionElement1() {
         return CollectionDtoElement.builder()
@@ -338,8 +351,8 @@ public abstract class TestDataForCollections {
     protected DtoWithCollectionsRegularElements createDtoWithCollections() {
         return DtoWithCollectionsRegularElements.builder()
             .isMasked(false)
-            .inns(new LinkedList<>(List.of("6454093632", "642125911472")))
-            .kpps(Set.of("645401003", "64540", "6454011111111111111111111"))
+            .inns(new LinkedList<>(List.of(INN_1, INN_2)))
+            .kpps(Set.of(KPP_1, KPP_2, KPP_INCORRECT))
             .dates(Map.of(
                 "key1", DATE_1,
                 "key2", DATE_2
@@ -350,8 +363,8 @@ public abstract class TestDataForCollections {
     protected DtoWithCollectionsRegularElements createDtoWithCollectionsMasked() {
         return DtoWithCollectionsRegularElements.builder()
             .isMasked(true)
-            .inns(new LinkedList<>(List.of("64*****632", "64*****11472")))
-            .kpps(Set.of("64******3", "*****"))
+            .inns(new LinkedList<>(List.of(INN_1_MASKED, INN_2_MASKED)))
+            .kpps(Set.of(KPP_1_MASKED, KPP_2_MASKED))
             .dates(Map.of(
                 "key1", DATE_1_MASKED,
                 "key2", DATE_2_MASKED

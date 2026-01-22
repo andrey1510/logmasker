@@ -30,6 +30,10 @@ public abstract class TestData {
     private static final String AUTH_2 = "222-22";
     private static final String AUTH_1_MASKED = "1*****";
     private static final String AUTH_2_MASKED = "2*****2";
+    private static final String NAME_1 = "Иван";
+    private static final String NAME_1_MASKED = "И*****";
+    private static final String PATRONYMIC_1 = "Иванович";
+    private static final String PATRONYMIC_1_MASKED = "И*****ич";
     private static final String SURNAME_1 = "Петров";
     private static final String SURNAME_1_MASKED = "П*****в";
     private static final String SURNAME_2 = "Сидоров";
@@ -295,16 +299,15 @@ public abstract class TestData {
             .build();
     }
 
-
     protected ObjectFieldDto createObjectFieldDto() {
         return ObjectFieldDto.builder()
             .isMasked(false)
             .email(EMAIL)
             .textField(TEXT)
             .textFieldMap(new HashMap<>() {{
-                put("name", "Иван");
-                put("patronymic", "Иванович");
-                put("surname", "Иванов");
+                put("name", NAME_1);
+                put("patronymic", PATRONYMIC_1);
+                put("surname", SURNAME_1);
             }})
             .textFieldMapDto(new HashMap<>() {{
                 put("email", new ObjectFieldDto(false, EMAIL, null, null, null ));
@@ -318,9 +321,9 @@ public abstract class TestData {
             .email(EMAIL_MASKED)
             .textField(TEXT_MASKED)
             .textFieldMap(new HashMap<>() {{
-                put("name", "И*****");
-                put("patronymic", "И*****ич");
-                put("surname", "И*****в");
+                put("name", NAME_1_MASKED);
+                put("patronymic", PATRONYMIC_1_MASKED);
+                put("surname", SURNAME_1_MASKED);
             }})
             .textFieldMapDto(new HashMap<>() {{
                 put("email", new ObjectFieldDto(true, EMAIL_MASKED, null, null, null ));
