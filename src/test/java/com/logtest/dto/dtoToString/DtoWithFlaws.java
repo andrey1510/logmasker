@@ -21,6 +21,8 @@ import java.util.Set;
 @NoArgsConstructor
 public class DtoWithFlaws {
 
+    private boolean isMasked;
+
     @MaskedProperty(type = MaskPatternType.LOCAL_DATE)
     private LocalDate localDate;
 

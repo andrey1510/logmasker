@@ -37,7 +37,7 @@ public class Masker {
     }
 
     public static <T> String maskToStringWithOverride(T dto) {
-        return maskDates(convertDtoToStringAndMaskDates(mask(dto)));
+        return convertDtoToStringAndMaskDates(mask(dto));
     }
 
     public static <T> T mask(T dto) {

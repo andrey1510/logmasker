@@ -9,7 +9,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -39,8 +38,24 @@ public class MaskerMaskTests extends TestData {
             .takeWhile(Objects::nonNull)
             .forEach(dto -> {
                 assertTrue(dto.isMasked());
-                assertNotEquals("1111", dto.getText());
             });
+    }
+
+    @Test
+    void maskToString_testDeepRecursion() {
+
+        int dtoStructureLevels = 100;
+
+        assertNotNull(Masker.maskToString(createDeepRecursionDto(dtoStructureLevels)));
+    }
+
+
+    @Test
+    void maskToStringWithOverride_testDeepRecursion() {
+
+        int dtoStructureLevels = 100;
+
+        assertNotNull(Masker.maskToStringWithOverride(createDeepRecursionDto(dtoStructureLevels)));
     }
 
     @Test

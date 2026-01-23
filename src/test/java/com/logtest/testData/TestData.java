@@ -181,6 +181,8 @@ public abstract class TestData {
             current = DtoForRecursion.builder()
                 .isMasked(false)
                 .text(AUTH_1)
+                .localDate(DATE_1)
+                .offsetDateTime(DATE_TIME_1)
                 .dto(current)
                 .build();
         }
@@ -253,7 +255,6 @@ public abstract class TestData {
             .phoneNumber(PHONE_MASKED)
             .build();
     }
-
 
     protected DtoWithWrongPatternAndType createDtoWithWrongPatternAndType() {
         return DtoWithWrongPatternAndType.builder()

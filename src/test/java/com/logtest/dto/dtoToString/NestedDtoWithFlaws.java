@@ -21,6 +21,8 @@ import java.util.Set;
 @NoArgsConstructor
 public class NestedDtoWithFlaws {
 
+    private boolean isMasked;
+
     @MaskedProperty(type = MaskPatternType.LOCAL_DATE)
     private LocalDate localDate;
 
@@ -33,4 +35,6 @@ public class NestedDtoWithFlaws {
     @MaskedProperty(type = MaskPatternType.LOCAL_DATE)
     private Map<String, LocalDate> mapWithLocalDates;
 
+    @MaskedProperty(type = MaskPatternType.INN)
+    private String inn;
 }
