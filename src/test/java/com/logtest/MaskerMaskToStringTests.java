@@ -14,7 +14,13 @@ public class MaskerMaskToStringTests extends TestDataForToString {
     }
 
     @Test
-    void maskToString_testNoToStringOverride() {
+    void maskToString_testFlaws() {
+        assertEquals(createDtoWithFlaws(), Masker.mask(createDtoWithFlaws()));
+        assertEquals(createDtoWithFlaws(), Masker.maskToString(createDtoWithFlaws()));
+    }
+
+    @Test
+    void maskToStringWithOverride_test() {
         assertEquals(DTO_NO_TO_STRING_MASKED, Masker.maskToStringWithOverride(createDtoNoToString()));
     }
 

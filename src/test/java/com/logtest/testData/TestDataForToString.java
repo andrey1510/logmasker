@@ -1,9 +1,11 @@
 package com.logtest.testData;
 
+import com.logtest.dto.dtoToString.DtoWithFlaws;
 import com.logtest.dto.dtoToString.NestedDto;
 import com.logtest.dto.dtoToString.NestedDtoNoToString;
 import com.logtest.dto.dtoToString.Dto;
 import com.logtest.dto.dtoToString.DtoNoToString;
+import com.logtest.dto.dtoToString.NestedDtoWithFlaws;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -16,10 +18,12 @@ import java.util.Set;
 
 public abstract class TestDataForToString {
 
-    private static final String DATES_NOT_TO_BE_MASKED_TEXT = "=0001 :0001 112.0001 12.0001 0001-12 11.11.2001 2001-11-11 shall not to be masked";
+    private static final String DATES_NOT_TO_BE_MASKED_TEXT = "0000 0000-12";
     private static final LocalDate DATE_1 = LocalDate.of(2023, 5, 2);
     private static final LocalDate DATE_2 = LocalDate.of(2024, 4, 3);
-    private static final OffsetDateTime DATE_TIME_1 = OffsetDateTime.of(0, 12, 31, 23, 59, 59, 60000, ZoneOffset.UTC);
+    private static final LocalDate DATE_3 = LocalDate.of(2024, 8, 3);
+    private static final LocalDate DATE_4 = LocalDate.of(2025, 8, 3);
+    private static final OffsetDateTime DATE_TIME_1 = OffsetDateTime.of(2022, 12, 31, 23, 59, 59, 60000, ZoneOffset.UTC);
     private static final OffsetDateTime DATE_TIME_2 = OffsetDateTime.of(2025, 4, 5, 6, 4, 4, 4, ZoneOffset.UTC);
 
     public static final String DTO_NO_TO_STRING_MASKED = "DtoNoToString(localDate=****-05-02, " +
@@ -38,6 +42,44 @@ public abstract class TestDataForToString {
         "setWithOffsetDateTime=[****-12-31T23:59:59.000060Z, ****-04-05T06:04:04.000000004Z], " +
         "mapWithOffsetDateTime={key1=****-12-31T23:59:59.000060Z, key2=****-04-05T06:04:04.000000004Z})";
 
+    protected NestedDtoWithFlaws createNullNestedDtoWithFlaws1() {
+        return NestedDtoWithFlaws.builder()
+            .localDate(DATE_3)
+            .dateTime(null)
+            .mapWithLocalDates(null)
+            .listWithLocalDates(null)
+            .build();
+    }
+
+    protected NestedDtoWithFlaws createNullNestedDtoWithFlaws2() {
+        return NestedDtoWithFlaws.builder()
+            .localDate(DATE_4)
+            .dateTime(null)
+            .mapWithLocalDates(null)
+            .listWithLocalDates(null)
+            .build();
+    }
+
+    protected DtoWithFlaws createDtoWithFlaws() {
+        return DtoWithFlaws.builder()
+            .localDate(null)
+            .offsetDateTime(null)
+            .localDateNoMask(DATE_1)
+            .offsetDateTimeNoMask(DATE_TIME_1)
+            .mapWithDtos(new HashMap<>() {{
+                put("key1", createNullNestedDtoWithFlaws1());
+                put("key2", createNullNestedDtoWithFlaws2());
+            }})
+            .mapWithLocalDates(new HashMap<>() {{
+                put("key1", null);
+                put("key2", null);
+            }})
+            .listWithLocalDates(null)
+            .setWithLocalDates(new HashSet<>(Set.of(DATE_3, DATE_4)))
+            .setWithDtos(new HashSet<>(Set.of(createNullNestedDtoWithFlaws1(), createNullNestedDtoWithFlaws2())))
+            .nestedDto(null)
+            .build();
+    }
 
     protected NestedDto createNestedDto1() {
         return NestedDto.builder()

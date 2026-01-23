@@ -61,20 +61,17 @@ public class CollectionProcessor {
 
         if (maskedProperty != null) {
             return map.entrySet().stream()
-                .collect(Collectors.toMap(
-                    Map.Entry::getKey,
-                    entry -> processAnnotatedCollectionElement(entry.getValue(), maskedProperty.type()),
-                    (existing, replacement) -> replacement,
-                    HashMap::new
-                ));
+                .collect(HashMap::new, (m, e) -> m.put(e.getKey(),
+                        processAnnotatedCollectionElement(e.getValue(), maskedProperty.type())
+                    ), HashMap::putAll
+                );
         } else {
             return map.entrySet().stream()
-                .collect(Collectors.toMap(
-                    entry -> processMapKey(entry.getKey(), processed),
-                    entry -> processMapValue(entry.getValue(), field, processed),
-                    (existing, replacement) -> replacement,
-                    HashMap::new
-                ));
+                .collect(HashMap::new, (m, e) -> m.put(
+                        processMapKey(e.getKey(), processed),
+                        processMapValue(e.getValue(), field, processed)
+                    ), HashMap::putAll
+                );
         }
     }
 

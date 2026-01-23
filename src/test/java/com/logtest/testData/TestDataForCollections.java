@@ -353,10 +353,11 @@ public abstract class TestDataForCollections {
             .isMasked(false)
             .inns(new LinkedList<>(List.of(INN_1, INN_2)))
             .kpps(Set.of(KPP_1, KPP_2, KPP_INCORRECT))
-            .dates(Map.of(
-                "key1", DATE_1,
-                "key2", DATE_2
-            ))
+            .dates(new HashMap<>() {{
+                put("key1", DATE_1);
+                put("key2", DATE_2);
+                put("key3", null);
+            }})
             .build();
     }
 
@@ -365,10 +366,11 @@ public abstract class TestDataForCollections {
             .isMasked(true)
             .inns(new LinkedList<>(List.of(INN_1_MASKED, INN_2_MASKED)))
             .kpps(Set.of(KPP_1_MASKED, KPP_2_MASKED))
-            .dates(Map.of(
-                "key1", DATE_1_MASKED,
-                "key2", DATE_2_MASKED
-            ))
+            .dates(new HashMap<>() {{
+                put("key1", DATE_1_MASKED);
+                put("key2", DATE_2_MASKED);
+                put("key3", null);
+            }})
             .build();
     }
 

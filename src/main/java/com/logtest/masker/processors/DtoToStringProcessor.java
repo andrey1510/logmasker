@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,40 +32,34 @@ public class DtoToStringProcessor {
         if (dto == null) {
             return "null";
         } else if (processed.containsKey(dto)) {
-            return "cyclic reference";
+            return "[cyclic reference error]";
         }
-
         processed.put(dto, dto);
 
-        Class<?> clazz = dto.getClass();
-        StringBuilder sb = new StringBuilder();
+        try {
+            Class<?> clazz = dto.getClass();
 
-        sb.append(clazz.getSimpleName()).append("(");
+            String fieldsString = Arrays.stream(clazz.getDeclaredFields())
+                .filter(field -> !field.isSynthetic())
+                .map(field -> processField(field, dto, processed))
+                .collect(Collectors.joining(", "));
 
-        Field[] fields = clazz.getDeclaredFields();
-        for (int i = 0; i < fields.length; i++) {
-            Field field = fields[i];
-            field.setAccessible(true);
+            return clazz.getSimpleName() + "(" + fieldsString + ")";
 
-            if (field.isSynthetic()) continue;
-
-            sb.append(field.getName()).append("=");
-
-            try {
-                sb.append(processFieldValue(field.get(dto), processed));
-            } catch (IllegalAccessException e) {
-                log.warn("Cannot access field for toString: {}", e.getMessage());
-                sb.append("...");
-            }
-
-            if (i < fields.length - 1) {
-                sb.append(", ");
-            }
+        } finally {
+            processed.remove(dto);
         }
+    }
 
-        sb.append(")");
-        processed.remove(dto);
-        return sb.toString();
+    private static String processField(Field field, Object dto, Map<Object, Object> processed) {
+        field.setAccessible(true);
+
+        try {
+            return field.getName() + "=" + processFieldValue(field.get(dto), processed);
+
+        } catch (IllegalAccessException e) {
+            return field.getName() + "=[field access error]";
+        }
     }
 
     private static String processFieldValue(Object value, Map<Object, Object> processed) {
@@ -73,10 +69,8 @@ public class DtoToStringProcessor {
             return processRecursively(value, processed);
         } else if (value instanceof Map) {
             return mapToString((Map<?, ?>) value, processed);
-        } else if (value instanceof List) {
-            return listToString((List<?>) value, processed);
-        } else if (value instanceof Set) {
-            return setToString((Set<?>) value, processed);
+        } else if (value instanceof List || value instanceof Set) {
+            return listOrSetToString((Collection<?>) value, processed);
         } else if (value.getClass().isArray()) {
             return arrayToString(value, processed);
         } else {
@@ -84,61 +78,31 @@ public class DtoToStringProcessor {
         }
     }
 
-    private static String listToString(List<?> list, Map<Object, Object> visited) {
-
-        String elements = list.stream()
-            .map(item -> elementToString(item, visited))
-            .collect(Collectors.joining(", "));
-
-        return "[" + elements + "]";
+    private static String listOrSetToString(Collection<?> collection, Map<Object, Object> processed) {
+        return collection.stream()
+            .map(item -> elementToString(item, processed))
+            .collect(Collectors.joining(", ", "[", "]"));
     }
 
-    private static String setToString(Set<?> set, Map<Object, Object> visited) {
-
-        String elements = set.stream()
-            .map(item -> elementToString(item, visited))
-            .collect(Collectors.joining(", "));
-
-        return "[" + elements + "]";
+    private static String arrayToString(Object array, Map<Object, Object> processed) {
+        return IntStream.range(0, Array.getLength(array))
+            .mapToObj(i -> elementToString(Array.get(array, i), processed))
+            .collect(Collectors.joining(", ", "[", "]"));
     }
 
-    private static String arrayToString(Object array, Map<Object, Object> visited) {
-
-        String elements = IntStream.range(0, Array.getLength(array))
-            .mapToObj(i -> elementToString(Array.get(array, i), visited))
-            .collect(Collectors.joining(", "));
-
-        return "[" + elements + "]";
-    }
-
-    private static String elementToString(Object element, Map<Object, Object> visited) {
+    private static String elementToString(Object element, Map<Object, Object> processed) {
         if (element == null) {
             return "null";
         } else if (element.getClass().isAnnotationPresent(Masked.class)) {
-            return processRecursively(element, visited);
+            return processRecursively(element, processed);
         } else {
             return String.valueOf(element);
         }
     }
 
-    private static String mapToString(Map<?, ?> map, Map<Object, Object> visited) {
-
-        String entries = map.entrySet().stream()
-            .map(entry -> {
-                StringBuilder sb = new StringBuilder();
-                sb.append(entry.getKey()).append("=");
-                Object value = entry.getValue();
-
-                if (value != null && value.getClass().isAnnotationPresent(Masked.class)) {
-                    sb.append(processRecursively(value, visited));
-                } else {
-                    sb.append(value);
-                }
-
-                return sb.toString();
-            })
-            .collect(Collectors.joining(", "));
-
-        return "{" + entries + "}";
+    private static String mapToString(Map<?, ?> map, Map<Object, Object> processed) {
+        return map.entrySet().stream()
+            .map(entry -> entry.getKey() + "=" + processFieldValue(entry.getValue(), processed))
+            .collect(Collectors.joining(", ", "{", "}"));
     }
 }
