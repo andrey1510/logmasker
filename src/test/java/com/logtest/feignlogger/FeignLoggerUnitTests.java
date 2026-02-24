@@ -133,27 +133,4 @@ public class FeignLoggerUnitTests {
         }));
     }
 
-    @Test
-    void shouldLogRequestHeader_test() {
-
-        when(feignLoggerProperties.getShouldNotLogRequestHeaders())
-            .thenReturn(Set.of("Authorization", "X-Secret"));
-
-        assertFalse(feignLogger.shouldLogRequestHeader("Authorization"));
-        assertFalse(feignLogger.shouldLogRequestHeader("X-Secret"));
-        assertTrue(feignLogger.shouldLogRequestHeader("Content-Type"));
-        assertTrue(feignLogger.shouldLogRequestHeader("Accept"));
-    }
-
-    @Test
-    void shouldLogResponseHeader_test() {
-
-        when(feignLoggerProperties.getShouldNotLogResponseHeaders())
-            .thenReturn(Set.of("X-Secret-Response", "X-Internal"));
-
-        assertFalse(feignLogger.shouldLogResponseHeader("X-Secret-Response"));
-        assertFalse(feignLogger.shouldLogResponseHeader("X-Internal"));
-        assertTrue(feignLogger.shouldLogResponseHeader("Content-Type"));
-        assertTrue(feignLogger.shouldLogResponseHeader("Content-Length"));
-    }
 }

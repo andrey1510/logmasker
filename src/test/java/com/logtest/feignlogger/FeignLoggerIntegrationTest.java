@@ -204,8 +204,10 @@ class FeignLoggerIntegrationTest {
         assertEquals("response data", response.getTextField());
 
         String logs = output.getAll();
-        assertFalse(logs.contains("Authorization"));
-        assertFalse(logs.contains("jwt"));
+        assertTrue(logs.contains("Authorization: ***") || logs.contains("authorization: ***"));
+        assertFalse(logs.contains("Bearer test-token-123"));
+        assertTrue(logs.contains("jwt: ***"));
+        assertFalse(logs.contains("test jwt"));
 
     }
 

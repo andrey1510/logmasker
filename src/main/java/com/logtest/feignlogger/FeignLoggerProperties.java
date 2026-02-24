@@ -14,7 +14,8 @@ import java.util.Set;
 @ConfigurationProperties(prefix = "service-name.feign-logger")
 public class FeignLoggerProperties {
 
-    private Set<String> shouldNotLogRequestHeaders = new HashSet<>();
+    private Set<String> shouldMaskRequestHeaders = new HashSet<>();
 
-    private Set<String> shouldNotLogResponseHeaders = new HashSet<>();
+    private Set<String> shouldMaskResponseHeaders = new HashSet<>();
+
 }

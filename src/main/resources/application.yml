@@ -15,8 +15,8 @@ server:
 
 service-name:
   feign-logger:
-    should-not-log-request-headers: Authorization, jwt
-    should-not-log-response-headers: jwt
+    should-mask-request-headers: jwt, authorization
+    should-mask-response-headers: jwt, authorization
 
 sample-external-service:
   url: http://localhost:8888
